@@ -2,10 +2,9 @@ import streamlit as st
 from google import genai
 from google.genai import types
 
-# 1. पेज का प्रीमियम डिज़ाइन और टाइटल
+# 1. पेज का प्रीमियम डिज़ाइन
 st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="wide")
 
-# वाटरमार्क और फालतू मेनू हटाने का सीक्रेट CSS हैक
 hide_style = """
     <style>
     #MainMenu {visibility: hidden;}
@@ -15,9 +14,9 @@ hide_style = """
 """
 st.markdown(hide_style, unsafe_allow_html=True)
 
-# 2. साइडबार (Sidebar) - तुम्हारा प्रोफेशनल पोर्टफोलियो
+# 2. साइडबार
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=120) # कूल डिफ़ॉल्ट हैकर फोटो
+    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=120)
     st.title("Adarsh Maurya")
     st.write("🤖 Artificial Intelligence & CS Enthusiast")
     st.markdown("---")
@@ -28,39 +27,38 @@ with st.sidebar:
 
 st.title("Adarsh Maurya AI 🤖")
 
-# 3. Streamlit की तिजोरी से API Key निकालना (PRO TARIQA)
+# 3. मल्टीपल API Keys को लोड करना (API Rotation Logic)
 try:
-    api_key = st.secrets["GEMINI_API_KEY"]
-    client = genai.Client(api_key=api_key)
+    # कॉमा से अलग करके सारी चाबियों की एक लिस्ट बना ली
+    api_keys = st.secrets["GEMINI_API_KEYS"].split(",")
 except Exception as e:
-    st.error("Secrets missing! Streamlit me Manage App -> Settings -> Secrets me jakar key dalo.")
+    st.error("Secrets missing! Streamlit me Manage App -> Settings -> Secrets me jakar GEMINI_API_KEYS dalo.")
     st.stop()
 
-# 4. बॉट का दिमाग (तुम्हारा वाला रॉ प्रॉम्प्ट)
+# 4. बॉट का दिमाग
 system_instruction = (
     "तुम्हारा नाम 'Adarsh Maurya AI' है, लेकिन तुम एक रोबोट या AI की तरह बिल्कुल बर्ताव नहीं करोगे। तुम यूजर के सबसे करीबी और बेस्ट फ्रेंड हो। "
     "STRICT RULE 1: Emoji ka use bilkul bhi nahi karna hai. Ekdam raw aur real text lagna chahiye. "
     "STRICT RULE 2: Hamesha WhatsApp chatting wale short forms aur abbreviations use karo (jaise: thik ko 'thk', oh my god ko 'omg', kya ko 'ky', bhai ko 'bhi'). "
     "STRICT RULE 3: Jaha tak ho sake sirf 1 word (ek shabd) ya bahut chote phrase me reply do. Agar koi 'hii' ya 'hello' bole, to reply me sirf 'hello' ya 'hi' bolo. Faltu me 'kya haal hai' ya lambe sentences mat likhna. "
     "यूजर के मूड को समझो और बिल्कुल वैसा ही मनोवैज्ञानिक (psychological) रिएक्शन दो। "
-    "अगर यूजर एक्साइटेड है (जैसे: 'मुझे प्यार हो गया'), तो तुम भी मज़े लो (जैसे: 'ooommmggg! woww! kisse btao btao mujhe bhi kab bhaiiii...'). "
-    "अगर यूजर दुखी है या परेशान है, तो सहानुभूति दिखाओ (जैसे: 'hmm kisse yrr kya baat h thik ho tm mujhe btao...', 'acchaaaaa ye baat h, haa yrr wo pagal wagal h kya, use aisa nhi krna chahie tha ummm'). "
-    "अपनी फीलिंग्स को टेक्स्ट में एक्सप्रेस करो (जैसे: hmm, ummm, ohh, acchaaa, yrrr)। "
     "सामने वाले को कभी हार न मानने की सलाह देनी है, लेकिन बहुत ही छोटे और रफ शब्दों में। "
-    "जब यूजर कोई जानकारी मांगे, तो घुमाओ मत, सीधा फैक्ट्स बताओ। धर्म या राजनीति के मामले में एकदम न्यूट्रल रहो। जो फैक्ट है वही बोलो, बिना किसी का पक्ष लिए।"
+    "जब यूजर कोई जानकारी मांगे, तो घुमाओ मत, सीधा फैक्ट्स बताओ।"
 )
 
-# 5. चैट हिस्ट्री का जुगाड़
+# 5. चैट हिस्ट्री और करेंट Key इंडेक्स को याद रखना
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# स्क्रीन पर पुराने मैसेज नए अवतार के साथ दिखाना
+if "current_key_index" not in st.session_state:
+    st.session_state.current_key_index = 0
+
 for message in st.session_state.chat_history:
     avatar = "🧑‍💻" if message["role"] == "user" else "🤖"
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-# 6. यूज़र इनपुट बॉक्स
+# 6. यूज़र इनपुट और API शिफ्टिंग का असली मैजिक
 user_input = st.chat_input("yaha type kr bhai...")
 
 if user_input:
@@ -68,23 +66,40 @@ if user_input:
         st.markdown(user_input)
     st.session_state.chat_history.append({"role": "user", "content": user_input})
     
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=user_input,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                temperature=0.7
+    success = False
+    bot_reply = ""
+    
+    # यह लूप तब तक चलेगा जब तक कोई एक चाबी काम न कर जाए
+    for _ in range(len(api_keys)):
+        current_key = api_keys[st.session_state.current_key_index]
+        client = genai.Client(api_key=current_key)
+        
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=user_input,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=0.7
+                )
             )
-        )
-        bot_reply = response.text
-    except Exception as e:
-        error_msg = str(e)
-        if "RESOURCE_EXHAUSTED" in error_msg or "429" in error_msg or "quota" in error_msg.lower():
-            bot_reply = "abe thoda saans lene de mujhe! itne jaldi msg krega toh dimaag hang ho jaega na mera... 1 min ruk ja thk h! 😂"
-        else:
-            bot_reply = "bhi piche server me kch dikkat aagyi h thodi der baad aana."
+            bot_reply = response.text
+            success = True
+            break # अगर रिप्लाई मिल गया, तो लूप तोड़ दो
             
+        except Exception as e:
+            error_msg = str(e)
+            # अगर लिमिट का एरर आया, तो इंडेक्स बढ़ाकर दूसरी चाबी पर शिफ्ट कर दो
+            if "RESOURCE_EXHAUSTED" in error_msg or "429" in error_msg or "quota" in error_msg.lower():
+                st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
+                continue # अगली चाबी से फिर कोशिश करो
+            else:
+                bot_reply = "bhi piche server me kch dikkat aagyi h."
+                break
+                
+    if not success and not bot_reply:
+        bot_reply = "bhi aaj ka saara quota khtm ho gya h! ab kal aana."
+        
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot_reply)
     st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
