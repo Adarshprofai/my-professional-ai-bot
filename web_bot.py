@@ -77,9 +77,9 @@ if user_input:
                 temperature=0.7
             )
         )
-        bot_reply = response.text
-    except Exception as e:
-        bot_reply = "bhi backend pr error h net check kr ya secrets check kr"
+        bot_reply = response.text 
+        except Exception as e:
+        bot_reply = f"असली एरर यह है: {str(e)}"
         
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot_reply)
