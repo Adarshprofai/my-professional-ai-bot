@@ -68,7 +68,7 @@ if user_input:
         st.markdown(user_input)
     st.session_state.chat_history.append({"role": "user", "content": user_input})
     
-try:
+    try:
         response = client.models.generate_content(
             model='gemini-1.5-flash',
             contents=user_input,
