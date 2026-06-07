@@ -7,7 +7,7 @@ from PIL import Image
 # 1. पेज का प्रीमियम डिज़ाइन
 st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="wide")
 
-# 2. PREMIUM UI (Glassmorphism, No Watermark & Fixed Input Box)
+# 2. PREMIUM UI (Aesthetic Calming Background & Glassmorphism)
 premium_css = """
 <style>
 /* Watermark aur upar/neeche ka menu gayab karo */
@@ -15,17 +15,16 @@ premium_css = """
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
-/* Dark Cinematic Background Image */
+/* Dark Aesthetic & Calming Background (Aankho ko sukoon dene wala) */
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop");
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Deep calming midnight vibe */
     background-size: cover;
-    background-position: center;
     background-attachment: fixed;
 }
 
 /* Transparent Sidebar (Glass Effect) */
 [data-testid="stSidebar"] {
-    background-color: rgba(10, 10, 10, 0.4) !important;
+    background-color: rgba(10, 10, 10, 0.3) !important;
     backdrop-filter: blur(15px);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -40,13 +39,13 @@ h1, h2, h3, p, span, div {
 
 /* Chat Messages me Glassmorphism */
 .stChatMessage {
-    background-color: rgba(20, 20, 20, 0.5) !important;
+    background-color: rgba(20, 20, 20, 0.4) !important;
     backdrop-filter: blur(12px) !important;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 15px;
     padding: 15px;
     margin-bottom: 15px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
     color: white !important;
 }
 
@@ -73,7 +72,7 @@ textarea::placeholder {
 
 /* File Uploader styling (Chota aur compact) */
 [data-testid="stFileUploader"] {
-    background-color: rgba(20,20,20,0.6) !important;
+    background-color: rgba(20,20,20,0.4) !important;
     border-radius: 10px;
     padding: 5px;
     border: 1px solid rgba(255,255,255,0.2);
@@ -119,7 +118,7 @@ with col3:
     game_html = """
     <!DOCTYPE html>
     <html><head><style>
-      canvas { border: 1px solid rgba(255,255,255,0.3); background-color: rgba(10,10,10,0.6); border-radius: 10px; cursor: pointer; display: block; margin-top: 15px;}
+      canvas { border: 1px solid rgba(255,255,255,0.2); background-color: rgba(10,10,10,0.5); border-radius: 10px; cursor: pointer; display: block; margin-top: 15px;}
       body { margin: 0; overflow: hidden; display: flex; justify-content: right;}
     </style></head><body>
     <canvas id="gameCanvas" width="280" height="80"></canvas>
@@ -135,8 +134,8 @@ with col3:
         if (isGameOver) { ctx.fillStyle = "white"; ctx.fillText("Game Over! Tap to Restart", 65, 45); return; }
         if (score < 10) { ctx.fillStyle = "rgba(255, 255, 255, 0.3)"; ctx.fillText("Space / Tap to Jump", 150, 20); }
         
-        ctx.fillStyle = "#00e5ff"; ctx.fillRect(player.x, player.y, player.width, player.height); // Player
-        ctx.fillStyle = "#ff003c"; ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height); // Obstacle
+        ctx.fillStyle = "#00e5ff"; ctx.fillRect(player.x, player.y, player.width, player.height);
+        ctx.fillStyle = "#ff003c"; ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         
         player.y += player.dy;
         if (player.y < 50) { player.dy += player.gravity; } else { player.y = 50; player.dy = 0; player.isJumping = false; }
@@ -162,22 +161,27 @@ with col3:
     """
     components.html(game_html, height=100)
 
-# 6. ✨ द शायरी इंजन (Vision AI) ✨
+# 6. ✨ द शायरी इंजन (Vision AI with Compliment & Vibe Check) ✨
 if uploaded_photo is not None:
     img = Image.open(uploaded_photo)
     st.markdown("---")
     
-    # UI layout for Poetry Box
     p_col1, p_col2 = st.columns([0.2, 0.8])
     with p_col1:
         st.image(img, caption="Vibe Check...", use_column_width=True)
         
     with p_col2:
-        with st.spinner("tasveer ko padh kar lafz bun raha hu..."):
+        with st.spinner("tasveer ko padh kar vibe samajh raha hu..."):
             shayari_text = ""
-            shayari_prompt = "Is photo ki vibe, emotion aur depth ko dhyan se samjho. Is photo par 2 se 4 line ki ek behad deep, raw aur aakhon me bas jane wali shayari likho. Text Hindi-Urdu mix hona chahiye, jisme Urdu ke gehre lafz hon (jaise: sukoon, sukoot, firaaq, qurbat, vasl, noor, muntazir). Shayari Devnagari script (Hindi alphabets) me likho taaki padhne me asar ho. Result me sirf aur sirf shayari honi chahiye, aur koi bhi line nahi."
+            # Updated Prompt: Pehle compliment, phir simple hindi me urdu words ke sath shayari
+            shayari_prompt = (
+                "Is photo ki vibe, emotion aur khubsurti ko dhyan se samjho. "
+                "1. Sabse pehle photo ki vibe ke hisaab se ek chota sa pyaara aur modern compliment do (jaise: 'Wow, behad khubsurat tasveer!', 'Kya aesthetic vibe hai!', ya 'Badi sukoon bhari photo hai'). "
+                "2. Fir ek line ka space chhod kar, 2 se 4 line ki ek deep aur aakhon me bas jane wali shayari likho. "
+                "3. Shayari ki bhasha bilkul aasan Hindi honi chahiye jo aasaani se samajh aaye, lekin usme 'sukoon', 'noor', 'qurbat' jaise pyare Urdu lafz zaroor mix hon taaki vibe aaye. "
+                "4. Pura text Devnagari script (Hindi alphabets) aur thodi bahut Hinglish me hona chahiye. Faltu ka koi explanation mat likhna."
+            )
             
-            # API Rotation Logic for Image
             success = False
             for _ in range(len(api_keys)):
                 current_key = api_keys[st.session_state.current_key_index]
@@ -195,19 +199,20 @@ if uploaded_photo is not None:
                     continue
             
             if success:
-                # Elegant Dark Box styling for Poetry
+                # 🟢 BADE SHABDON WALA ELEGANT BOX (Font Size Increased)
                 elegant_box = f"""
                 <div style="
-                    background-color: rgba(15, 15, 15, 0.85); 
+                    background-color: rgba(15, 15, 15, 0.6); 
                     padding: 30px; 
                     border-radius: 12px; 
-                    border: 1px solid rgba(255, 255, 255, 0.2); 
+                    border: 1px solid rgba(255, 255, 255, 0.15); 
                     text-align: center; 
                     font-family: 'Georgia', serif; 
-                    font-size: 1.5rem; 
+                    font-size: 2.0rem;  /* Bade aur clear font ke liye 2.0rem */
+                    font-weight: 500;
                     line-height: 1.8; 
-                    color: #e0e0e0;
-                    box-shadow: 0px 10px 30px rgba(0,0,0,0.7);
+                    color: #f1f5f9;
+                    box-shadow: 0px 10px 30px rgba(0,0,0,0.5);
                     margin-top: 10px;
                 ">
                     <i>{shayari_text.replace(chr(10), '<br>')}</i>
