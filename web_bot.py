@@ -17,7 +17,7 @@ header {visibility: hidden;}
 
 /* Dark Aesthetic & Calming Background (Aankho ko sukoon dene wala) */
 [data-testid="stAppViewContainer"] {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Deep calming midnight vibe */
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); 
     background-size: cover;
     background-attachment: fixed;
 }
@@ -70,12 +70,27 @@ textarea::placeholder {
     fill: #000000 !important;
 }
 
-/* File Uploader styling (Chota aur compact) */
+/* 🟢 NEW: File Uploader Styling (Purple Theme & Black Text) */
+/* 1. Uploader ka main background (Deep Purple) */
 [data-testid="stFileUploader"] {
-    background-color: rgba(20,20,20,0.4) !important;
-    border-radius: 10px;
-    padding: 5px;
-    border: 1px solid rgba(255,255,255,0.2);
+    background-color: rgba(107, 33, 168, 0.85) !important; /* Deep Aesthetic Purple */
+    border-radius: 12px;
+    padding: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 2. Drag & Drop area (+ icon wala box) - Light color for visibility */
+[data-testid="stFileUploadDropzone"] {
+    background-color: #f3e8ff !important; /* Light Lavender jisse box alag se dikhe */
+    border: 2px dashed #4c1d95 !important; /* Dark purple dashed border */
+    border-radius: 8px !important;
+}
+
+/* 3. Dropzone ke andar ka text (200MB limit) aur SVG icon (Solid Black) */
+[data-testid="stFileUploadDropzone"] * {
+    color: #000000 !important;
+    fill: #000000 !important;
+    font-weight: 600 !important;
 }
 </style>
 """
@@ -173,7 +188,6 @@ if uploaded_photo is not None:
     with p_col2:
         with st.spinner("tasveer ko padh kar vibe samajh raha hu..."):
             shayari_text = ""
-            # Updated Prompt: Pehle compliment, phir simple hindi me urdu words ke sath shayari
             shayari_prompt = (
                 "Is photo ki vibe, emotion aur khubsurti ko dhyan se samjho. "
                 "1. Sabse pehle photo ki vibe ke hisaab se ek chota sa pyaara aur modern compliment do (jaise: 'Wow, behad khubsurat tasveer!', 'Kya aesthetic vibe hai!', ya 'Badi sukoon bhari photo hai'). "
@@ -199,7 +213,6 @@ if uploaded_photo is not None:
                     continue
             
             if success:
-                # 🟢 BADE SHABDON WALA ELEGANT BOX (Font Size Increased)
                 elegant_box = f"""
                 <div style="
                     background-color: rgba(15, 15, 15, 0.6); 
@@ -208,7 +221,7 @@ if uploaded_photo is not None:
                     border: 1px solid rgba(255, 255, 255, 0.15); 
                     text-align: center; 
                     font-family: 'Georgia', serif; 
-                    font-size: 2.0rem;  /* Bade aur clear font ke liye 2.0rem */
+                    font-size: 2.0rem; 
                     font-weight: 500;
                     line-height: 1.8; 
                     color: #f1f5f9;
