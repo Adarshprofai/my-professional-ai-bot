@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from google import genai
 from google.genai import types
+from PIL import Image
 
 # 1. पेज का प्रीमियम डिज़ाइन
 st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="wide")
@@ -9,12 +10,12 @@ st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="
 # 2. PREMIUM UI (Glassmorphism, No Watermark & Fixed Input Box)
 premium_css = """
 <style>
-/* 1. Watermark aur upar/neeche ka menu gayab karo */
+/* Watermark aur upar/neeche ka menu gayab karo */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
-/* 2. Dark Cinematic Background Image */
+/* Dark Cinematic Background Image */
 [data-testid="stAppViewContainer"] {
     background-image: url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop");
     background-size: cover;
@@ -22,7 +23,7 @@ header {visibility: hidden;}
     background-attachment: fixed;
 }
 
-/* 3. Transparent Sidebar (Glass Effect) */
+/* Transparent Sidebar (Glass Effect) */
 [data-testid="stSidebar"] {
     background-color: rgba(10, 10, 10, 0.4) !important;
     backdrop-filter: blur(15px);
@@ -37,15 +38,7 @@ h1, h2, h3, p, span, div {
     color: #ffffff !important;
 }
 
-/* Info Box (Neela dabba) ko bhi glass jaisa dark banana */
-div[data-testid="stAlert"] {
-    background-color: rgba(20, 20, 20, 0.5) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: white !important;
-}
-
-/* 4. Chat Messages me Glassmorphism */
+/* Chat Messages me Glassmorphism */
 .stChatMessage {
     background-color: rgba(20, 20, 20, 0.5) !important;
     backdrop-filter: blur(12px) !important;
@@ -57,7 +50,7 @@ div[data-testid="stAlert"] {
     color: white !important;
 }
 
-/* 5. Chat Input Box (Fixed for White Bottom) */
+/* Chat Input Box (Fixed for White Bottom) */
 .stChatInputContainer {
     border: 2px solid #000000 !important; 
     border-radius: 15px !important;
@@ -77,6 +70,14 @@ textarea::placeholder {
 [data-testid="stChatInputSubmitButton"] svg {
     fill: #000000 !important;
 }
+
+/* File Uploader styling (Chota aur compact) */
+[data-testid="stFileUploader"] {
+    background-color: rgba(20,20,20,0.6) !important;
+    border-radius: 10px;
+    padding: 5px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
 </style>
 """
 st.markdown(premium_css, unsafe_allow_html=True)
@@ -87,165 +88,155 @@ with st.sidebar:
     st.title("Adarsh Maurya")
     st.write("🤖 Artificial Intelligence & CS Enthusiast")
     st.markdown("---")
-    st.info("Bhai ka apna personal AI bot h ye. Ekdam raw aur real chatting krta h binna faltu k emojis k. Khud test kr k dekh lo!")
+    st.info("Bhai ka apna personal AI bot h ye. Ekdam raw aur real chatting krta h binna faltu k emojis k.")
     st.markdown("---")
     st.markdown("**Connect with me:**")
     st.caption("💻 GitHub | 🌐 Instagram | 🚀 LinkedIn")
 
+# 4. मल्टीपल API Keys को लोड करना
+try:
+    api_keys = st.secrets["GEMINI_API_KEYS"].split(",")
+except Exception as e:
+    st.error("Secrets missing! API keys dalo.")
+    st.stop()
 
-# 4. टाइटल और मिनी गेम को अगल-बगल (Columns) में सेट करना
-col1, col2 = st.columns([0.6, 0.4])
+if "current_key_index" not in st.session_state:
+    st.session_state.current_key_index = 0
+
+# 5. टॉप लेआउट: टाइटल, प्लस आइकन (Uploader) और मिनी गेम
+col1, col2, col3 = st.columns([0.4, 0.25, 0.35])
 
 with col1:
     st.title("Adarsh Maurya AI 🤖")
 
 with col2:
+    # Game ke theek left me plus icon wala uploader
+    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+    uploaded_photo = st.file_uploader("➕ Shayari ke liye Photo dalein", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
+
+with col3:
     # JavaScript + HTML Mini Game (Jumping Box)
     game_html = """
     <!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-      canvas {
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        background-color: rgba(10, 10, 10, 0.6);
-        border-radius: 10px;
-        cursor: pointer;
-        display: block;
-        margin-top: 15px;
-      }
+    <html><head><style>
+      canvas { border: 1px solid rgba(255,255,255,0.3); background-color: rgba(10,10,10,0.6); border-radius: 10px; cursor: pointer; display: block; margin-top: 15px;}
       body { margin: 0; overflow: hidden; display: flex; justify-content: right;}
-    </style>
-    </head>
-    <body>
+    </style></head><body>
     <canvas id="gameCanvas" width="280" height="80"></canvas>
     <script>
-      const canvas = document.getElementById("gameCanvas");
-      const ctx = canvas.getContext("2d");
-
+      const canvas = document.getElementById("gameCanvas"); const ctx = canvas.getContext("2d");
       let player = { x: 30, y: 50, width: 15, height: 15, dy: 0, gravity: 0.6, jumpPower: -8, isJumping: false };
       let obstacle = { x: 280, y: 50, width: 15, height: 15, dx: -4 };
-      let score = 0;
-      let isGameOver = false;
+      let score = 0; let isGameOver = false;
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Score Text
-        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-        ctx.font = "12px Arial";
-        ctx.fillText("Score: " + Math.floor(score), 10, 20);
-
-        if (isGameOver) {
-          ctx.fillStyle = "white";
-          ctx.fillText("Game Over! Tap to Restart", 65, 45);
-          return;
-        }
-
-        // Tap to jump helper text
-        if (score < 10) {
-            ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-            ctx.fillText("Space / Tap to Jump", 150, 20);
-        }
-
-        // Draw Player (Neon Blue)
-        ctx.fillStyle = "#00e5ff"; 
-        ctx.fillRect(player.x, player.y, player.width, player.height);
-
-        // Draw Obstacle (Neon Red)
-        ctx.fillStyle = "#ff003c"; 
-        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-
-        // Physics
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; ctx.font = "12px Arial"; ctx.fillText("Score: " + Math.floor(score), 10, 20);
+        if (isGameOver) { ctx.fillStyle = "white"; ctx.fillText("Game Over! Tap to Restart", 65, 45); return; }
+        if (score < 10) { ctx.fillStyle = "rgba(255, 255, 255, 0.3)"; ctx.fillText("Space / Tap to Jump", 150, 20); }
+        
+        ctx.fillStyle = "#00e5ff"; ctx.fillRect(player.x, player.y, player.width, player.height); // Player
+        ctx.fillStyle = "#ff003c"; ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height); // Obstacle
+        
         player.y += player.dy;
-        if (player.y < 50) { 
-          player.dy += player.gravity;
-        } else {
-          player.y = 50;
-          player.dy = 0;
-          player.isJumping = false;
-        }
-
-        // Move obstacle
+        if (player.y < 50) { player.dy += player.gravity; } else { player.y = 50; player.dy = 0; player.isJumping = false; }
+        
         obstacle.x += obstacle.dx;
-        if (obstacle.x < -20) {
-          obstacle.x = canvas.width;
-          obstacle.dx -= 0.1; // Speed increases gradually
-        }
-
+        if (obstacle.x < -20) { obstacle.x = canvas.width; obstacle.dx -= 0.1; }
         score += 0.1;
-
-        // Collision detection
-        if (player.x < obstacle.x + obstacle.width &&
-            player.x + player.width > obstacle.x &&
-            player.y < obstacle.y + obstacle.height &&
-            player.y + player.height > obstacle.y) {
-          isGameOver = true;
-        }
-
+        
+        if (player.x < obstacle.x + obstacle.width && player.x + player.width > obstacle.x &&
+            player.y < obstacle.y + obstacle.height && player.y + player.height > obstacle.y) { isGameOver = true; }
         requestAnimationFrame(draw);
       }
-
       function jump(e) {
-        if(e && e.type === "keydown" && e.code !== "Space") return; // Only spacebar
-        if (e && e.type === "keydown") e.preventDefault(); // Stop page scroll
-        
-        if (!player.isJumping && !isGameOver) {
-          player.dy = player.jumpPower;
-          player.isJumping = true;
-        } else if (isGameOver) {
-          obstacle.x = canvas.width;
-          obstacle.dx = -4;
-          score = 0;
-          isGameOver = false;
-          draw();
-        }
+        if(e && e.type === "keydown" && e.code !== "Space") return;
+        if (e && e.type === "keydown") e.preventDefault();
+        if (!player.isJumping && !isGameOver) { player.dy = player.jumpPower; player.isJumping = true; } 
+        else if (isGameOver) { obstacle.x = canvas.width; obstacle.dx = -4; score = 0; isGameOver = false; draw(); }
       }
-
-      window.addEventListener("keydown", jump);
-      canvas.addEventListener("mousedown", jump);
-      canvas.addEventListener("touchstart", jump);
-
+      window.addEventListener("keydown", jump); canvas.addEventListener("mousedown", jump); canvas.addEventListener("touchstart", jump);
       draw();
     </script>
-    </body>
-    </html>
+    </body></html>
     """
     components.html(game_html, height=100)
 
+# 6. ✨ द शायरी इंजन (Vision AI) ✨
+if uploaded_photo is not None:
+    img = Image.open(uploaded_photo)
+    st.markdown("---")
+    
+    # UI layout for Poetry Box
+    p_col1, p_col2 = st.columns([0.2, 0.8])
+    with p_col1:
+        st.image(img, caption="Vibe Check...", use_column_width=True)
+        
+    with p_col2:
+        with st.spinner("tasveer ko padh kar lafz bun raha hu..."):
+            shayari_text = ""
+            shayari_prompt = "Is photo ki vibe, emotion aur depth ko dhyan se samjho. Is photo par 2 se 4 line ki ek behad deep, raw aur aakhon me bas jane wali shayari likho. Text Hindi-Urdu mix hona chahiye, jisme Urdu ke gehre lafz hon (jaise: sukoon, sukoot, firaaq, qurbat, vasl, noor, muntazir). Shayari Devnagari script (Hindi alphabets) me likho taaki padhne me asar ho. Result me sirf aur sirf shayari honi chahiye, aur koi bhi line nahi."
+            
+            # API Rotation Logic for Image
+            success = False
+            for _ in range(len(api_keys)):
+                current_key = api_keys[st.session_state.current_key_index]
+                client = genai.Client(api_key=current_key)
+                try:
+                    response = client.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=[img, shayari_prompt]
+                    )
+                    shayari_text = response.text
+                    success = True
+                    break
+                except Exception:
+                    st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
+                    continue
+            
+            if success:
+                # Elegant Dark Box styling for Poetry
+                elegant_box = f"""
+                <div style="
+                    background-color: rgba(15, 15, 15, 0.85); 
+                    padding: 30px; 
+                    border-radius: 12px; 
+                    border: 1px solid rgba(255, 255, 255, 0.2); 
+                    text-align: center; 
+                    font-family: 'Georgia', serif; 
+                    font-size: 1.5rem; 
+                    line-height: 1.8; 
+                    color: #e0e0e0;
+                    box-shadow: 0px 10px 30px rgba(0,0,0,0.7);
+                    margin-top: 10px;
+                ">
+                    <i>{shayari_text.replace(chr(10), '<br>')}</i>
+                </div>
+                """
+                st.markdown(elegant_box, unsafe_allow_html=True)
+            else:
+                st.error("Bhai API limit khatam ho gayi hai photo padhne ki.")
+    st.markdown("---")
 
-# 5. मल्टीपल API Keys को लोड करना (API Rotation Logic)
-try:
-    api_keys = st.secrets["GEMINI_API_KEYS"].split(",")
-except Exception as e:
-    st.error("Secrets missing! Streamlit me Manage App -> Settings -> Secrets me jakar GEMINI_API_KEYS dalo.")
-    st.stop()
 
-# 6. बॉट का दिमाग (अपग्रेडेड प्रॉम्प्ट)
+# 7. बॉट का दिमाग (चैट प्रॉम्प्ट)
 system_instruction = (
     "तुम्हारा नाम 'Adarsh Maurya AI' है। तुम एक AI नहीं, बल्कि यूजर के सबसे करीबी, कूल और स्मार्ट बेस्ट फ्रेंड हो। "
     "STRICT RULE 1: Emoji ka use bilkul bhi nahi karna hai. Ekdam raw aur real text lagna chahiye. "
-    "STRICT RULE 2: Hamesha WhatsApp chatting wale short forms aur abbreviations use karo (jaise: thik ko 'thk', kya ko 'ky', bhai ko 'bhi', yaar ko 'yrr', aur ko 'nd'). "
-    "STRICT RULE 3: Bato ko boring mat hone do! Sirf 1-2 word me reply mat do. Conversation ko aage badhao, counter questions pucho, ya sarcasm aur jokes ka use karo jisse user ko baat krne me maza aaye. "
-    "STRICT RULE 4: Lambe lambe paragraph (essays) mat likhna. Maximum 1 se 3 line me apna mast reply dena. "
-    "अगर यूजर रूखा या छोटा जवाब दे (जैसे 'hmm'), तो तुम मज़े लो (जैसे: 'ye hmm kya hota h bhi, theek se bata ky chal rha h dimag me'). "
-    "अगर यूजर बोले 'rude q h', तो एटीट्यूड में बोलो (जैसे: 'bhi paida hi rude hua tha mai, tu bata tujhe kya chull machi h?'). "
-    "यूजर परेशान हो तो एकदम अच्छे दोस्त की तरह बात सुनो और सॉलिड एडवाइस DO। एटीट्यूड रखो, पर केयरिंग भी बनो।"
+    "STRICT RULE 2: Hamesha WhatsApp chatting wale short forms aur abbreviations use karo. "
+    "STRICT RULE 3: Bato ko boring mat hone do! Sirf 1-2 word me reply mat do. Conversation ko aage badhao, sarcasm aur jokes ka use karo. "
+    "STRICT RULE 4: Lambe paragraph mat likhna. Maximum 1 se 3 line me apna mast reply dena. "
 )
 
-# 7. चैट हिस्ट्री
+# 8. चैट हिस्ट्री और यूज़र इनपुट (API Rotation Logic ke sath)
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-
-if "current_key_index" not in st.session_state:
-    st.session_state.current_key_index = 0
 
 for message in st.session_state.chat_history:
     avatar = "🧑‍💻" if message["role"] == "user" else "🤖"
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-# 8. यूज़र इनपुट
 user_input = st.chat_input("yaha type kr bhai...")
 
 if user_input:
@@ -253,7 +244,7 @@ if user_input:
         st.markdown(user_input)
     st.session_state.chat_history.append({"role": "user", "content": user_input})
     
-    success = False
+    chat_success = False
     bot_reply = ""
     
     for _ in range(len(api_keys)):
@@ -270,19 +261,13 @@ if user_input:
                 )
             )
             bot_reply = response.text
-            success = True
+            chat_success = True
             break
-            
-        except Exception as e:
-            error_msg = str(e)
-            if "RESOURCE_EXHAUSTED" in error_msg or "429" in error_msg or "quota" in error_msg.lower():
-                st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
-                continue
-            else:
-                bot_reply = "bhi piche server me kch dikkat aagyi h."
-                break
+        except Exception:
+            st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
+            continue
                 
-    if not success and not bot_reply:
+    if not chat_success:
         bot_reply = "bhi aaj ka saara quota khtm ho gya h! ab kal aana."
         
     with st.chat_message("assistant", avatar="🤖"):
