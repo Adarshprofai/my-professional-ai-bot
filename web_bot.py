@@ -83,12 +83,14 @@ st.markdown(premium_css, unsafe_allow_html=True)
 
 
 # ==========================================
-# 5. TOP ROW: Title | Voice Dustbin | Game
+# 5. TOP ROW: Title & Tagline | Voice Dustbin | Game
 # ==========================================
 col1, col2, col3 = st.columns([0.35, 0.35, 0.3])
 
 with col1:
-    st.markdown("<h1 style='margin-top: 50px;'>Adarsh Maurya AI 🤖</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='margin-top: 50px; margin-bottom: 0px;'>Adarsh Maurya AI 🤖</h1>", unsafe_allow_html=True)
+    # ✨ THE POWERFUL STATEMENT (TAGLINE) ✨
+    st.markdown("<p style='color: #aaaaaa; font-size: 16px; font-weight: 500; font-style: italic; letter-spacing: 1.5px;'>Raw Intelligence. Unfiltered Vibe.</p>", unsafe_allow_html=True)
 
 with col2:
     # 🎙️ DUSTBIN (Voice Wala Box - Dark Style)
