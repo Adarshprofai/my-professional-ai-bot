@@ -7,112 +7,7 @@ from PIL import Image
 # 1. पेज का प्रीमियम डिज़ाइन
 st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="wide")
 
-# 2. PREMIUM UI (Aesthetic Calming Background, Glassmorphism & Custom Uploader)
-premium_css = """
-<style>
-/* Watermark aur upar/neeche ka menu gayab karo */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-
-/* Dark Aesthetic & Calming Background (Aankho ko sukoon dene wala) */
-[data-testid="stAppViewContainer"] {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); 
-    background-size: cover;
-    background-attachment: fixed;
-}
-
-/* Transparent Sidebar (Glass Effect) */
-[data-testid="stSidebar"] {
-    background-color: rgba(10, 10, 10, 0.3) !important;
-    backdrop-filter: blur(15px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Sidebar aur sabhi text ko safed (White) karna */
-[data-testid="stSidebar"] * {
-    color: #ffffff !important;
-}
-h1, h2, h3, p, span, div {
-    color: #ffffff !important;
-}
-
-/* Chat Messages me Glassmorphism */
-.stChatMessage {
-    background-color: rgba(20, 20, 20, 0.4) !important;
-    backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-    color: white !important;
-}
-
-/* Chat Input Box (Fixed for White Bottom) */
-.stChatInputContainer {
-    border: 2px solid #000000 !important; 
-    border-radius: 15px !important;
-    background-color: #ffffff !important; 
-}
-textarea {
-    color: #000000 !important; 
-    -webkit-text-fill-color: #000000 !important;
-}
-textarea::placeholder {
-    color: #000000 !important; 
-    opacity: 0.9 !important;
-}
-[data-testid="stChatInputSubmitButton"] {
-    color: #000000 !important;
-}
-[data-testid="stChatInputSubmitButton"] svg {
-    fill: #000000 !important;
-}
-
-/* 🟢 UPGRADED: File Uploader Styling (Purple Outer, Light Pink Inner, Dark Black Text) */
-/* 1. Uploader ka main background (Deep Purple) */
-[data-testid="stFileUploader"] {
-    background-color: rgba(107, 33, 168, 0.9) !important; 
-    border-radius: 12px;
-    padding: 10px !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-}
-
-/* 2. Drag & Drop area (Light Pink Background) */
-[data-testid="stFileUploadDropzone"] {
-    background-color: #ffd1dc !important; /* Aesthetic Light Pink */
-    border: 2px dashed #4c1d95 !important; /* Dark purple border */
-    border-radius: 8px !important;
-}
-
-/* 3. Dropzone ke andar ka sara Text, Button aur SVG icon (Solid Dark Black) */
-[data-testid="stFileUploadDropzone"] * {
-    color: #000000 !important;
-    fill: #000000 !important; /* Icon ke liye */
-    font-weight: 700 !important; /* Bold text taaki clearly dikhe */
-}
-
-/* Specific target for the upload button text inside dropzone */
-[data-testid="stFileUploadDropzone"] button * {
-    color: #000000 !important; 
-}
-</style>
-"""
-st.markdown(premium_css, unsafe_allow_html=True)
-
-# 3. साइडबार
-with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=120)
-    st.title("Adarsh Maurya")
-    st.write("🤖 Artificial Intelligence & CS Enthusiast")
-    st.markdown("---")
-    st.info("Bhai ka apna personal AI bot h ye. Ekdam raw aur real chatting krta h binna faltu k emojis k.")
-    st.markdown("---")
-    st.markdown("**Connect with me:**")
-    st.caption("💻 GitHub | 🌐 Instagram | 🚀 LinkedIn")
-
-# 4. मल्टीपल API Keys को लोड करना
+# 2. मल्टीपल API Keys को लोड करना
 try:
     api_keys = st.secrets["GEMINI_API_KEYS"].split(",")
 except Exception as e:
@@ -122,210 +17,206 @@ except Exception as e:
 if "current_key_index" not in st.session_state:
     st.session_state.current_key_index = 0
 
-# 5. टॉप लेआउट: टाइटल, प्लस आइकन (Uploader) और मिनी गेम
-col1, col2, col3 = st.columns([0.4, 0.25, 0.35])
+# 3. साइडबार - नेविगेशन मेन्यू (Super App Logic)
+with st.sidebar:
+    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=120)
+    st.title("Adarsh Maurya")
+    st.write("🤖 Artificial Intelligence & CS Enthusiast")
+    st.markdown("---")
+    
+    # 🟢 THE NAVIGATION MENU
+    st.subheader("Explore Zones")
+    app_mode = st.radio("Select Vibe:", ["🤖 AI & Creative Zone", "🗑️ The Mental Flush"], label_visibility="collapsed")
+    st.markdown("---")
+    
+    st.markdown("**Connect with me:**")
+    st.caption("💻 GitHub | 🌐 Instagram | 🚀 LinkedIn")
 
-with col1:
-    st.title("Adarsh Maurya AI 🤖")
 
-with col2:
-    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-    uploaded_photo = st.file_uploader("➕ Shayari ke liye Photo dalein", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
+# ==========================================
+# 🌌 ZONE 1: AI & CREATIVE ZONE (Tera Purana App)
+# ==========================================
+if app_mode == "🤖 AI & Creative Zone":
+    
+    # PREMIUM UI CSS
+    premium_css = """
+    <style>
+    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); 
+        background-size: cover; background-attachment: fixed;
+    }
+    [data-testid="stSidebar"] { background-color: rgba(10, 10, 10, 0.3) !important; backdrop-filter: blur(15px); }
+    [data-testid="stSidebar"] * { color: #ffffff !important; }
+    h1, h2, h3, p, span, div { color: #ffffff !important; }
+    .stChatMessage {
+        background-color: rgba(20, 20, 20, 0.4) !important; backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 15px; margin-bottom: 15px; color: white !important;
+    }
+    .stChatInputContainer { border: 2px solid #000000 !important; border-radius: 15px !important; background-color: #ffffff !important; }
+    textarea { color: #000000 !important; -webkit-text-fill-color: #000000 !important; }
+    textarea::placeholder { color: #000000 !important; opacity: 0.9 !important; }
+    [data-testid="stChatInputSubmitButton"] { color: #000000 !important; }
+    [data-testid="stChatInputSubmitButton"] svg { fill: #000000 !important; }
+    [data-testid="stFileUploader"] { background-color: rgba(107, 33, 168, 0.9) !important; border-radius: 12px; padding: 10px !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; }
+    [data-testid="stFileUploadDropzone"] { background-color: #ffd1dc !important; border: 2px dashed #4c1d95 !important; border-radius: 8px !important; }
+    [data-testid="stFileUploadDropzone"] * { color: #000000 !important; fill: #000000 !important; font-weight: 700 !important; }
+    [data-testid="stFileUploadDropzone"] button * { color: #000000 !important; }
+    </style>
+    """
+    st.markdown(premium_css, unsafe_allow_html=True)
 
-with col3:
-    # JavaScript + HTML Mini Game (Start Button & High Score Update)
-    game_html = """
-    <!DOCTYPE html>
-    <html><head><style>
-      canvas { border: 1px solid rgba(255,255,255,0.2); background-color: rgba(10,10,10,0.5); border-radius: 10px; cursor: pointer; display: block; margin-top: 15px;}
-      body { margin: 0; overflow: hidden; display: flex; justify-content: right;}
-    </style></head><body>
-    <canvas id="gameCanvas" width="280" height="80"></canvas>
-    <script>
-      const canvas = document.getElementById("gameCanvas"); const ctx = canvas.getContext("2d");
-      let player = { x: 30, y: 50, width: 15, height: 15, dy: 0, gravity: 0.6, jumpPower: -8, isJumping: false };
-      let obstacle = { x: 280, y: 50, width: 15, height: 15, dx: -4 };
-      let score = 0; 
-      let isGameOver = false;
-      let gameStarted = false; 
-      
-      let highScore = localStorage.getItem('adarshHighScore') || 0;
+    col1, col2, col3 = st.columns([0.4, 0.25, 0.35])
 
-      function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; ctx.font = "12px Arial"; 
-        ctx.fillText("Score: " + Math.floor(score), 10, 20);
-        ctx.fillStyle = "rgba(255, 215, 0, 0.9)"; 
-        ctx.fillText("HI: " + Math.floor(highScore), 210, 20);
+    with col1:
+        st.title("Adarsh Maurya AI 🤖")
 
-        if (!gameStarted) {
+    with col2:
+        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        uploaded_photo = st.file_uploader("➕ Shayari ke liye Photo dalein", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
+
+    with col3:
+        game_html = """
+        <!DOCTYPE html>
+        <html><head><style>
+          canvas { border: 1px solid rgba(255,255,255,0.2); background-color: rgba(10,10,10,0.5); border-radius: 10px; cursor: pointer; display: block; margin-top: 15px;}
+          body { margin: 0; overflow: hidden; display: flex; justify-content: right;}
+        </style></head><body>
+        <canvas id="gameCanvas" width="280" height="80"></canvas>
+        <script>
+          const canvas = document.getElementById("gameCanvas"); const ctx = canvas.getContext("2d");
+          let player = { x: 30, y: 50, width: 15, height: 15, dy: 0, gravity: 0.6, jumpPower: -8, isJumping: false };
+          let obstacle = { x: 280, y: 50, width: 15, height: 15, dx: -4 };
+          let score = 0; let isGameOver = false; let gameStarted = false; 
+          let highScore = localStorage.getItem('adarshHighScore') || 0;
+
+          function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; ctx.font = "12px Arial"; ctx.fillText("Score: " + Math.floor(score), 10, 20);
+            ctx.fillStyle = "rgba(255, 215, 0, 0.9)"; ctx.fillText("HI: " + Math.floor(highScore), 210, 20);
+
+            if (!gameStarted) {
+                ctx.fillStyle = "#00e5ff"; ctx.fillRect(player.x, player.y, player.width, player.height);
+                ctx.fillStyle = "#ff003c"; ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                ctx.fillStyle = "white"; ctx.font = "bold 16px Arial"; ctx.fillText("▶ START", 105, 45);
+                return; 
+            }
+            if (isGameOver) { ctx.fillStyle = "white"; ctx.font = "12px Arial"; ctx.fillText("Game Over! Tap to Restart", 65, 45); return; }
+            
             ctx.fillStyle = "#00e5ff"; ctx.fillRect(player.x, player.y, player.width, player.height);
             ctx.fillStyle = "#ff003c"; ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
             
-            ctx.fillStyle = "white"; ctx.font = "bold 16px Arial"; 
-            ctx.fillText("▶ START", 105, 45);
-            return; 
-        }
-
-        if (isGameOver) { 
-            ctx.fillStyle = "white"; ctx.font = "12px Arial"; ctx.fillText("Game Over! Tap to Restart", 65, 45); 
-            return; 
-        }
-        
-        ctx.fillStyle = "#00e5ff"; ctx.fillRect(player.x, player.y, player.width, player.height);
-        ctx.fillStyle = "#ff003c"; ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-        
-        player.y += player.dy;
-        if (player.y < 50) { player.dy += player.gravity; } else { player.y = 50; player.dy = 0; player.isJumping = false; }
-        
-        obstacle.x += obstacle.dx;
-        if (obstacle.x < -20) { obstacle.x = canvas.width; obstacle.dx -= 0.1; }
-        score += 0.1;
-        
-        if (player.x < obstacle.x + obstacle.width && player.x + player.width > obstacle.x &&
-            player.y < obstacle.y + obstacle.height && player.y + player.height > obstacle.y) { 
-            isGameOver = true; 
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('adarshHighScore', highScore);
+            player.y += player.dy; if (player.y < 50) { player.dy += player.gravity; } else { player.y = 50; player.dy = 0; player.isJumping = false; }
+            obstacle.x += obstacle.dx; if (obstacle.x < -20) { obstacle.x = canvas.width; obstacle.dx -= 0.1; }
+            score += 0.1;
+            
+            if (player.x < obstacle.x + obstacle.width && player.x + player.width > obstacle.x && player.y < obstacle.y + obstacle.height && player.y + player.height > obstacle.y) { 
+                isGameOver = true; 
+                if (score > highScore) { highScore = score; localStorage.setItem('adarshHighScore', highScore); }
             }
-        }
-        requestAnimationFrame(draw);
-      }
-      
-      function jump(e) {
-        if(e && e.type === "keydown" && e.code !== "Space") return;
-        if (e && e.type === "keydown") e.preventDefault();
-        
-        if (!gameStarted) {
-            gameStarted = true;
-            draw();
-            return;
-        }
-        
-        if (!player.isJumping && !isGameOver) { player.dy = player.jumpPower; player.isJumping = true; } 
-        else if (isGameOver) { obstacle.x = canvas.width; obstacle.dx = -4; score = 0; isGameOver = false; draw(); }
-      }
-      
-      window.addEventListener("keydown", jump); canvas.addEventListener("mousedown", jump); canvas.addEventListener("touchstart", jump);
-      draw(); 
-    </script>
-    </body></html>
+            requestAnimationFrame(draw);
+          }
+          function jump(e) {
+            if(e && e.type === "keydown" && e.code !== "Space") return;
+            if (e && e.type === "keydown") e.preventDefault();
+            if (!gameStarted) { gameStarted = true; draw(); return; }
+            if (!player.isJumping && !isGameOver) { player.dy = player.jumpPower; player.isJumping = true; } 
+            else if (isGameOver) { obstacle.x = canvas.width; obstacle.dx = -4; score = 0; isGameOver = false; draw(); }
+          }
+          window.addEventListener("keydown", jump); canvas.addEventListener("mousedown", jump); canvas.addEventListener("touchstart", jump);
+          draw(); 
+        </script>
+        </body></html>
+        """
+        components.html(game_html, height=100)
+
+    if uploaded_photo is not None:
+        img = Image.open(uploaded_photo)
+        st.markdown("---")
+        p_col1, p_col2 = st.columns([0.2, 0.8])
+        with p_col1: st.image(img, caption="Vibe Check...", use_column_width=True)
+        with p_col2:
+            with st.spinner("tasveer ko padh kar vibe samajh raha hu..."):
+                shayari_prompt = "1. Pyaara compliment do. 2. Space chhod kar, 2-4 line ki aasan Hindi me Urdu words (sukoon, noor) mix karke deep shayari likho. Text Devnagari me ho."
+                success = False
+                for _ in range(len(api_keys)):
+                    try:
+                        client = genai.Client(api_key=api_keys[st.session_state.current_key_index])
+                        response = client.models.generate_content(model='gemini-2.5-flash', contents=[img, shayari_prompt])
+                        st.markdown(f"<div style='background: rgba(15,15,15,0.6); padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); text-align: center; font-family: Georgia, serif; font-size: 2.0rem; font-weight: 500; color: #f1f5f9;'><i>{response.text.replace(chr(10), '<br>')}</i></div>", unsafe_allow_html=True)
+                        success = True
+                        break
+                    except Exception:
+                        st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
+                if not success: st.error("API limit khatam.")
+        st.markdown("---")
+
+    system_instruction = "तुम्हारा नाम 'Adarsh Maurya AI' है। एकदम WhatsApp वाले short forms (thk, kya, bhi) use karo. Emoji mat lagao. Sarcasm aur jokes ka use karo. Max 1-3 lines."
+    if "chat_history" not in st.session_state: st.session_state.chat_history = []
+    for msg in st.session_state.chat_history:
+        with st.chat_message(msg["role"], avatar="🧑‍💻" if msg["role"] == "user" else "🤖"): st.markdown(msg["content"])
+    user_input = st.chat_input("yaha type kr bhai...")
+    if user_input:
+        with st.chat_message("user", avatar="🧑‍💻"): st.markdown(user_input)
+        st.session_state.chat_history.append({"role": "user", "content": user_input})
+        chat_success = False
+        for _ in range(len(api_keys)):
+            try:
+                client = genai.Client(api_key=api_keys[st.session_state.current_key_index])
+                response = client.models.generate_content(model='gemini-2.5-flash', contents=user_input, config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.7))
+                with st.chat_message("assistant", avatar="🤖"): st.markdown(response.text)
+                st.session_state.chat_history.append({"role": "assistant", "content": response.text})
+                chat_success = True
+                break
+            except Exception:
+                st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
+        if not chat_success: st.error("Quota Over!")
+
+
+# ==========================================
+# 🗑️ ZONE 2: THE MENTAL FLUSH (Naya Feature)
+# ==========================================
+elif app_mode == "🗑️ The Mental Flush":
+
+    # Is page ka ekdam Dark, Void, Cinematic CSS
+    flush_css = """
+    <style>
+    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
+    [data-testid="stAppViewContainer"] {
+        background-color: #050505; /* Ekdam andhera (Void) */
+        color: #ffffff;
+    }
+    [data-testid="stSidebar"] { background-color: rgba(10, 10, 10, 0.6) !important; backdrop-filter: blur(15px); border-right: 1px solid rgba(255, 255, 255, 0.05); }
+    [data-testid="stSidebar"] * { color: #ffffff !important; }
+    .flush-title { text-align: center; font-family: 'Courier New', monospace; font-size: 3rem; color: #444; text-shadow: 0 0 10px rgba(255,255,255,0.1); margin-bottom: 0px;}
+    .flush-sub { text-align: center; color: #666; font-size: 1.2rem; margin-top: -10px; margin-bottom: 30px;}
+    </style>
     """
-    components.html(game_html, height=100)
-
-# 6. ✨ द शायरी इंजन ✨
-if uploaded_photo is not None:
-    img = Image.open(uploaded_photo)
-    st.markdown("---")
+    st.markdown(flush_css, unsafe_allow_html=True)
     
-    p_col1, p_col2 = st.columns([0.2, 0.8])
-    with p_col1:
-        st.image(img, caption="Vibe Check...", use_column_width=True)
-        
-    with p_col2:
-        with st.spinner("tasveer ko padh kar vibe samajh raha hu..."):
-            shayari_text = ""
-            shayari_prompt = (
-                "Is photo ki vibe, emotion aur khubsurti ko dhyan se samjho. "
-                "1. Sabse pehle photo ki vibe ke hisaab se ek chota sa pyaara aur modern compliment do (jaise: 'Wow, behad khubsurat tasveer!', 'Kya aesthetic vibe hai!', ya 'Badi sukoon bhari photo hai'). "
-                "2. Fir ek line ka space chhod kar, 2 se 4 line ki ek deep aur aakhon me bas jane wali shayari likho. "
-                "3. Shayari ki bhasha bilkul aasan Hindi honi chahiye jo aasaani se samajh aaye, lekin usme 'sukoon', 'noor', 'qurbat' jaise pyare Urdu lafz zaroor mix hon taaki vibe aaye. "
-                "4. Pura text Devnagari script (Hindi alphabets) aur thodi bahut Hinglish me hona chahiye. Faltu ka koi explanation mat likhna."
-            )
-            
-            success = False
-            for _ in range(len(api_keys)):
-                current_key = api_keys[st.session_state.current_key_index]
-                client = genai.Client(api_key=current_key)
-                try:
-                    response = client.models.generate_content(
-                        model='gemini-2.5-flash',
-                        contents=[img, shayari_prompt]
-                    )
-                    shayari_text = response.text
-                    success = True
-                    break
-                except Exception:
-                    st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
-                    continue
-            
-            if success:
-                elegant_box = f"""
-                <div style="
-                    background-color: rgba(15, 15, 15, 0.6); 
-                    padding: 30px; 
-                    border-radius: 12px; 
-                    border: 1px solid rgba(255, 255, 255, 0.15); 
-                    text-align: center; 
-                    font-family: 'Georgia', serif; 
-                    font-size: 2.0rem; 
-                    font-weight: 500;
-                    line-height: 1.8; 
-                    color: #f1f5f9;
-                    box-shadow: 0px 10px 30px rgba(0,0,0,0.5);
-                    margin-top: 10px;
-                ">
-                    <i>{shayari_text.replace(chr(10), '<br>')}</i>
-                </div>
-                """
-                st.markdown(elegant_box, unsafe_allow_html=True)
-            else:
-                st.error("Bhai API limit khatam ho gayi hai photo padhne ki.")
-    st.markdown("---")
+    st.markdown("<h1 class='flush-title'>THE MENTAL FLUSH</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='flush-sub'>Dump your mental garbage here. No one is judging.</p>", unsafe_allow_html=True)
 
-# 7. बॉट का दिमाग (चैट प्रॉम्प्ट)
-system_instruction = (
-    "तुम्हारा नाम 'Adarsh Maurya AI' है। तुम एक AI नहीं, बल्कि यूजर के सबसे करीबी, कूल और स्मार्ट बेस्ट फ्रेंड हो। "
-    "STRICT RULE 1: Emoji ka use bilkul bhi nahi karna hai. Ekdam raw aur real text lagna chahiye. "
-    "STRICT RULE 2: Hamesha WhatsApp chatting wale short forms aur abbreviations use karo. "
-    "STRICT RULE 3: Bato ko boring mat hone do! Sirf 1-2 word me reply mat do. Conversation ko aage badhao, sarcasm aur jokes ka use karo. "
-    "STRICT RULE 4: Lambe paragraph mat likhna. Maximum 1 se 3 line me apna mast reply dena. "
-)
-
-# 8. चैट हिस्ट्री और यूज़र इनपुट
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-for message in st.session_state.chat_history:
-    avatar = "🧑‍💻" if message["role"] == "user" else "🤖"
-    with st.chat_message(message["role"], avatar=avatar):
-        st.markdown(message["content"])
-
-user_input = st.chat_input("yaha type kr bhai...")
-
-if user_input:
-    with st.chat_message("user", avatar="🧑‍💻"):
-        st.markdown(user_input)
-    st.session_state.chat_history.append({"role": "user", "content": user_input})
-    
-    chat_success = False
-    bot_reply = ""
-    
-    for _ in range(len(api_keys)):
-        current_key = api_keys[st.session_state.current_key_index]
-        client = genai.Client(api_key=current_key)
-        
-        try:
-            response = client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=user_input,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    temperature=0.7
-                )
-            )
-            bot_reply = response.text
-            chat_success = True
-            break
-        except Exception:
-            st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
-            continue
-                
-    if not chat_success:
-        bot_reply = "bhi aaj ka saara quota khtm ho gya h! ab kal aana."
-        
-    with st.chat_message("assistant", avatar="🤖"):
-        st.markdown(bot_reply)
-    st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
+    # 🟢 DUSTBIN & ANIMATION LOGIC (HTML + JS + Audio)
+    flush_html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <style>
+        body { text-align: center; background: transparent; overflow: hidden; font-family: sans-serif; color: white;}
+        .bin-container { position: relative; width: 400px; height: 350px; margin: 0 auto; overflow: hidden;}
+        /* Dustbin Design */
+        .dustbin { width: 140px; height: 160px; border: 4px solid #333; border-top: none; position: absolute; bottom: 10px; left: 130px; border-radius: 0 0 20px 20px; background: rgba(20,20,20,0.9); z-index: 10; cursor: pointer; transition: 0.3s; box-shadow: inset 0 -20px 30px rgba(0,0,0,0.8); }
+        .dustbin:hover { box-shadow: 0 0 20px rgba(255,0,0,0.2); border-color: #555;}
+        .lid { width: 150px; height: 12px; background: #444; position: absolute; top: -12px; left: -5px; border-radius: 5px; transform-origin: left; transition: transform 0.5s ease-in-out; }
+        .dustbin.open .lid { transform: rotate(-75deg); background: #666;}
+        /* Mic Design */
+        .mic { position: absolute; font-size: 40px; top: 30px; left: 50px; opacity: 0; transition: 0.5s; z-index: 5; }
+        .dustbin.open .mic { top: -60px; opacity: 1; animation: pulse 1.2s infinite alternate; }
+        @keyframes pulse { 0% { transform: scale(1); text-shadow: 0 0 10px red;} 100% { transform: scale(1.1); text-shadow: 0 0 20px red;} }
+        /* Word Animation */
+        .word { position: absolute; font-size: 22px; font-weight: bold; color: #ff3333; opacity: 0; z-index: 2; text-shadow: 0 0 8px red; white-space: nowrap;}
+        /* Button */
+        #flushBtn { display: none; margin: 20px auto; padding: 15px 40px; background: #aa0000; color: white; border: 2px solid #ff0000; border-radius: 8px; font-size: 24px; cursor: pointer; font-family: 'Courier New', monospace; font-weight: bold; box-shadow: 0 0 15px rgba(255,0,0,0.5); transition: 0.3s;}
+        #flushBtn:hover { background: #ff0000; transform: scale(1.05); box-shadow: 0 0 30px rgba(255,0,0,0.8); }
+        #statusText
