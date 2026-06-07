@@ -5,14 +5,52 @@ from google.genai import types
 # 1. पेज का प्रीमियम डिज़ाइन
 st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="wide")
 
-hide_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
+# 2. PREMIUM UI (Glassmorphism & No Watermark)
+premium_css = """
+<style>
+/* 1. Watermark aur upar/neeche ka menu gayab karo */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+._link_1hwk6_10 {display: none;} /* Extra Github link hider */
+
+/* 2. Dark Cinematic Background Image */
+[data-testid="stAppViewContainer"] {
+    background-image: url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* 3. Transparent Sidebar (Glass Effect) */
+[data-testid="stSidebar"] {
+    background-color: rgba(10, 10, 10, 0.4) !important;
+    backdrop-filter: blur(15px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 4. Chat Messages me Glassmorphism (Sheesha) */
+.stChatMessage {
+    background-color: rgba(20, 20, 20, 0.5) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* 5. Chat Input Box (Neeche type karne wali jagah) */
+.stChatInputContainer {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 10px;
+}
+</style>
 """
-st.markdown(hide_style, unsafe_allow_html=True)
+st.markdown(premium_css, unsafe_allow_html=True)
 
 # 2. साइडबार
 with st.sidebar:
