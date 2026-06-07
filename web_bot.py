@@ -7,11 +7,11 @@ from PIL import Image
 # 1. पेज का प्रीमियम डिज़ाइन
 st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="wide")
 
-# 2. मल्टीपल API Keys को लोड करना
+# 2. मल्टीपल API Keys को लोड करना (API Rotation Logic)
 try:
     api_keys = st.secrets["GEMINI_API_KEYS"].split(",")
 except Exception as e:
-    st.error("Secrets missing! API keys dalo.")
+    st.error("Secrets missing! Streamlit me Manage App -> Settings -> Secrets me jakar GEMINI_API_KEYS dalo.")
     st.stop()
 
 if "current_key_index" not in st.session_state:
@@ -24,7 +24,7 @@ with st.sidebar:
     st.write("🤖 Artificial Intelligence & CS Enthusiast")
     st.markdown("---")
     
-    # 🟢 THE NAVIGATION MENU
+    # NAVIGATION MENU
     st.subheader("Explore Zones")
     app_mode = st.radio("Select Vibe:", ["🤖 AI & Creative Zone", "🗑️ The Mental Flush"], label_visibility="collapsed")
     st.markdown("---")
@@ -34,53 +34,89 @@ with st.sidebar:
 
 
 # ==========================================
-# 🌌 ZONE 1: AI & CREATIVE ZONE (Tera Purana App)
+# 🌌 ZONE 1: AI & CREATIVE ZONE (New Design & Voice)
 # ==========================================
 if app_mode == "🤖 AI & Creative Zone":
     
-    # PREMIUM UI CSS
+    # 🟢 NEW: ZZone 1 का UI CSS (Black/Yellow theme & Dark Voice)
     premium_css = """
     <style>
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
+    
+    /* Dark Calming Background */
     [data-testid="stAppViewContainer"] {
         background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); 
         background-size: cover; background-attachment: fixed;
     }
+    
+    /* Sidebar styling */
     [data-testid="stSidebar"] { background-color: rgba(10, 10, 10, 0.3) !important; backdrop-filter: blur(15px); }
     [data-testid="stSidebar"] * { color: #ffffff !important; }
+    
+    /* General Text safed */
     h1, h2, h3, p, span, div { color: #ffffff !important; }
+    
+    /* Chat Messages styling */
     .stChatMessage {
         background-color: rgba(20, 20, 20, 0.4) !important; backdrop-filter: blur(12px) !important;
         border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 15px; margin-bottom: 15px; color: white !important;
     }
+    
+    /* Bottom Text Chat Input styling */
     .stChatInputContainer { border: 2px solid #000000 !important; border-radius: 15px !important; background-color: #ffffff !important; }
     textarea { color: #000000 !important; -webkit-text-fill-color: #000000 !important; }
     textarea::placeholder { color: #000000 !important; opacity: 0.9 !important; }
     [data-testid="stChatInputSubmitButton"] { color: #000000 !important; }
     [data-testid="stChatInputSubmitButton"] svg { fill: #000000 !important; }
-    [data-testid="stFileUploader"] { background-color: rgba(107, 33, 168, 0.9) !important; border-radius: 12px; padding: 10px !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; }
-    [data-testid="stFileUploadDropzone"] { background-color: #ffd1dc !important; border: 2px dashed #4c1d95 !important; border-radius: 8px !important; }
-    [data-testid="stFileUploadDropzone"] * { color: #000000 !important; fill: #000000 !important; font-weight: 700 !important; }
-    [data-testid="stFileUploadDropzone"] button * { color: #000000 !important; }
+    
+    /* 🟡 NEW: File Uploader (Black/Yellow Inside) */
+    [data-testid="stFileUploader"] { 
+        background-color: #000000 !important; /* Bahar ka box black */
+        border-radius: 12px; padding: 10px !important; 
+        border: 2px dashed #ffff00 !important; /* Pila dash border */
+    }
+    [data-testid="stFileUploadDropzone"] { 
+        background-color: #000000 !important; /* Andar ka area black */
+        border-radius: 8px !important;
+    }
+    /* Dropzone ke andar ka text aur SVG icon (Neon Yellow) */
+    [data-testid="stFileUploadDropzone"] * { 
+        color: #ffff00 !important; 
+        fill: #ffff00 !important; 
+        font-weight: 700 !important; 
+    }
+    [data-testid="stFileUploadDropzone"] button {
+         background-color: #ffff00 !important; /* Button pila */
+         border-color: #ffff00 !important;
+    }
+    [data-testid="stFileUploadDropzone"] button * {
+        color: #000000 !important; /* Button text kaala for contrast */
+    }
+
+    /* 🎤 NEW: Dark Styling for Voice Box in Zone 1 */
+    .stAudioInput {
+        background-color: rgba(10, 10, 10, 0.6) !important;
+        border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white !important;
+    }
+    .stAudioInput * { color: #ffffff !important; fill: #ffffff !important;}
     </style>
     """
     st.markdown(premium_css, unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([0.4, 0.25, 0.35])
+    # टॉप लेआउट: टाइटल और मिनी गेम
+    col1, col3 = st.columns([0.65, 0.35])
 
     with col1:
         st.title("Adarsh Maurya AI 🤖")
 
-    with col2:
-        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-        uploaded_photo = st.file_uploader("➕ Shayari ke liye Photo dalein", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
-
     with col3:
+        # Mini Game JavaScript
         game_html = """
         <!DOCTYPE html>
         <html><head><style>
           canvas { border: 1px solid rgba(255,255,255,0.2); background-color: rgba(10,10,10,0.5); border-radius: 10px; cursor: pointer; display: block; margin-top: 15px;}
-          body { margin: 0; overflow: hidden; display: flex; justify-content: right;}
+          body { margin: 0; overflow: hidden; display: flex; justify(content): right;}
         </style></head><body>
         <canvas id="gameCanvas" width="280" height="80"></canvas>
         <script>
@@ -130,13 +166,31 @@ if app_mode == "🤖 AI & Creative Zone":
         """
         components.html(game_html, height=100)
 
+    st.markdown("---")
+    
+    # 🟡 NEW: Image Section (Aesthetic Purple Upload Zone)
+    st.markdown("### ✨ Shayari ke liye Photo dalein")
+    uploaded_photo = st.file_uploader("➕ Upload Image", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
+    
+    # Photo-to-Poetry Logic
     if uploaded_photo is not None:
         img = Image.open(uploaded_photo)
-        st.markdown("---")
+        
+        # 🎤 NEW Voice Wala Box (Zone 1) - Dark Styled Box
+        st.markdown("""
+            <div style="background-color: rgba(10, 10, 10, 0.7); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center; margin-bottom: 20px;">
+                <h4 style="color: #ffffff; margin-bottom: 15px;">Bol kr bhi bata skte ho... (Optional)</h4>
+                <p style="color: gray; font-size: 14px;">Type karne ki zarurat nahi...</p>
+            </div>
+        """, unsafe_allow_html=True)
+        # Voice Input Component
+        audio_prompt_zone1 = st.audio_input("Bol ke type kro", key="zone1_voice_input")
+
         p_col1, p_col2 = st.columns([0.2, 0.8])
         with p_col1: st.image(img, caption="Vibe Check...", use_column_width=True)
         with p_col2:
             with st.spinner("tasveer ko padh kar vibe samajh raha hu..."):
+                # Use standard Hinglish prompt. Logic can be added later for transcription if needed.
                 shayari_prompt = "1. Pyaara compliment do. 2. Space chhod kar, 2-4 line ki aasan Hindi me Urdu words (sukoon, noor) mix karke deep shayari likho. Text Devnagari me ho."
                 success = False
                 for _ in range(len(api_keys)):
@@ -151,11 +205,21 @@ if app_mode == "🤖 AI & Creative Zone":
                 if not success: st.error("API limit khatam.")
         st.markdown("---")
 
-    system_instruction = "तुम्हारा नाम 'Adarsh Maurya AI' है। एकदम WhatsApp वाले short forms (thk, kya, bhi) use karo. Emoji mat lagao. Sarcasm aur jokes ka use karo. Max 1-3 lines."
+    # Bot Brain Prompt
+    system_instruction = "तुम्हारा नाम 'Adarsh Maurya AI' है। एकदम WhatsApp वाले short forms (thk, kya, bhi) use karo. Emoji mat lagao. Sarcasm aur jokes ka use karo. Conversation ko aage badhao, counter questions pucho. essays mat likho, max 1-3 lines."
+    
+    # Initialize Chat
     if "chat_history" not in st.session_state: st.session_state.chat_history = []
+    
+    # Display History
     for msg in st.session_state.chat_history:
-        with st.chat_message(msg["role"], avatar="🧑‍💻" if msg["role"] == "user" else "🤖"): st.markdown(msg["content"])
+        avatar = "🧑‍💻" if msg["role"] == "user" else "🤖"
+        with st.chat_message(msg["role"], avatar=avatar): st.markdown(msg["content"])
+    
+    # Input
     user_input = st.chat_input("yaha type kr bhai...")
+    
+    # API shifting Logic for Chat
     if user_input:
         with st.chat_message("user", avatar="🧑‍💻"): st.markdown(user_input)
         st.session_state.chat_history.append({"role": "user", "content": user_input})
@@ -174,7 +238,7 @@ if app_mode == "🤖 AI & Creative Zone":
 
 
 # ==========================================
-# 🗑️ ZONE 2: THE MENTAL FLUSH (Naya Feature)
+# 🗑️ ZONE 2: THE MENTAL FLUSH (Vent Zone - No Change)
 # ==========================================
 elif app_mode == "🗑️ The Mental Flush":
 
@@ -197,7 +261,7 @@ elif app_mode == "🗑️ The Mental Flush":
     st.markdown("<h1 class='flush-title'>THE MENTAL FLUSH</h1>", unsafe_allow_html=True)
     st.markdown("<p class='flush-sub'>Dump your mental garbage here. No one is judging.</p>", unsafe_allow_html=True)
 
-    # 🟢 DUSTBIN & ANIMATION LOGIC (HTML + JS + Audio)
+    # DUSTBIN & ANIMATION LOGIC (HTML + JS + Audio)
     flush_html = """
     <!DOCTYPE html>
     <html>
@@ -249,12 +313,12 @@ elif app_mode == "🗑️ The Mental Flush":
         let recognition;
         let wordsDropped = 0;
 
-        // Speech API Setup
+        // Speech API Setup (Chrome only)
         if ('webkitSpeechRecognition' in window) {
             recognition = new webkitSpeechRecognition();
             recognition.continuous = true;
             recognition.interimResults = false;
-            recognition.lang = 'hi-IN'; // Understands Hindi & English
+            recognition.lang = 'hi-IN'; // Understands Hindi & Hinglish
             
             recognition.onresult = function(event) {
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -286,13 +350,17 @@ elif app_mode == "🗑️ The Mental Flush":
                 statusText.innerText = "Speak your heart out. Your words are flowing into the trash...";
                 statusText.style.color = "#ff6666";
                 isOpen = true;
-                if(recognition) recognition.start();
+                if(recognition) {
+                    try { recognition.start(); } catch (e) { console.log("Already started"); }
+                }
             } else {
                 bin.classList.remove('open');
                 statusText.innerText = "Bin Locked. Ready to Destroy?";
                 statusText.style.color = "#888";
                 isOpen = false;
-                if(recognition) recognition.stop();
+                if(recognition) {
+                    try { recognition.stop(); } catch (e) { console.log("Already stopped"); }
+                }
             }
         }
 
@@ -301,7 +369,7 @@ elif app_mode == "🗑️ The Mental Flush":
             w.className = 'word';
             w.innerText = text;
             
-            // Start position: randomly at the top of the container
+            // Start position randomly on top
             let startX = 50 + Math.random() * 200; 
             w.style.left = startX + 'px';
             w.style.top = '0px';
@@ -310,31 +378,26 @@ elif app_mode == "🗑️ The Mental Flush":
             let startTime = performance.now();
             function animate(time) {
                 let elapsed = time - startTime;
-                let progress = elapsed / 2500; // 2.5 seconds falling time
+                let progress = elapsed / 2500; // Falling speed
                 if (progress > 1) progress = 1;
                 
-                // Y-axis: Falls down to 300px (inside bin)
+                // Y-axis: Falls down
                 let y = progress * 300;
                 
-                // X-axis: Sine Wave motion (Lehrate hue)
+                // X-axis: Sine Wave motion
                 let x = startX + Math.sin(progress * Math.PI * 6) * 40; 
                 
-                // Funnel effect: End me ekdam dustbin ke center (180px) me ghusna chahiye
-                if (progress > 0.7) {
-                    x = x + (180 - x) * ((progress - 0.7) * 3.33); 
-                }
+                // Funnel effect: Center inside bin at end
+                if (progress > 0.7) { x = x + (180 - x) * ((progress - 0.7) * 3.33); }
 
                 w.style.transform = `translate(${x - startX}px, ${y}px)`;
                 
+                // Fade in/out
                 if(progress < 0.2) w.style.opacity = progress * 5;
                 else if (progress > 0.8) w.style.opacity = (1 - progress) * 5;
                 else w.style.opacity = 1;
 
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    w.remove(); // Delete word after it falls
-                }
+                if (progress < 1) { requestAnimationFrame(animate); } else { w.remove(); }
             }
             requestAnimationFrame(animate);
         }
@@ -347,6 +410,7 @@ elif app_mode == "🗑️ The Mental Flush":
             boom.play();
             setTimeout(() => flush.play(), 600);
             
+            // Screen Shake Animation
             document.body.animate([
                 { transform: 'translate(5px, 5px) rotate(0deg)' },
                 { transform: 'translate(-5px, -5px) rotate(-1deg)' },
@@ -355,12 +419,12 @@ elif app_mode == "🗑️ The Mental Flush":
                 { transform: 'translate(0px, 0px) rotate(0deg)' }
             ], { duration: 150, iterations: 6 });
 
-            document.querySelectorAll('.word').forEach(e => e.remove());
-
+            // Success Message
             flushBtn.style.display = "none";
             statusText.innerText = "The garbage has been cleared. Take a deep breath. You are light now. 🌊";
             statusText.style.color = "#00e5ff";
             
+            // Reset
             setTimeout(() => {
                 statusText.innerText = "Tap the dustbin to open the lid and activate the mic.";
                 statusText.style.color = "#888";
@@ -375,41 +439,31 @@ elif app_mode == "🗑️ The Mental Flush":
 
     st.markdown("---")
     
-    # 🧠 THE ADVICE ZONE (AI Friend in Flush Mode)
+    # 🧠 THE ADVICE ZONE (Empathetic Jugaad AI Friend)
     st.markdown("<h3 style='text-align: center; color: #555;'>Too heavy to flush? Let's talk it out.</h3>", unsafe_allow_html=True)
     
-    if "advice_history" not in st.session_state:
-        st.session_state.advice_history = []
-        
+    if "advice_history" not in st.session_state: st.session_state.advice_history = []
     for msg in st.session_state.advice_history:
         avatar = "🧑‍💻" if msg["role"] == "user" else "🧠"
-        with st.chat_message(msg["role"], avatar=avatar):
-            st.markdown(msg["content"])
+        with st.chat_message(msg["role"], avatar=avatar): st.markdown(msg["content"])
 
     advice_input = st.chat_input("I need advice...")
     if advice_input:
         with st.chat_message("user", avatar="🧑‍💻"): st.markdown(advice_input)
         st.session_state.advice_history.append({"role": "user", "content": advice_input})
-        
         advice_system = (
-            "You are a highly empathetic, wise, and calm psychologist/friend. The user is using the 'Mental Flush' feature, meaning they are stressed or overthinking. "
-            "Acknowledge their pain gently. Provide practical, grounded, and realistic 'jugaad' (solutions) to help lower their anxiety. "
-            "Use a comforting, conversational Hinglish tone. Keep it short (3-4 lines max)."
+            "You are a highly empathetic, wise, and calm psychologist/friend. Acknowledge user's pain gently. "
+            "Provide practical, grounded, realistic Hinglish 'jugaad' solutions to help anxiety. essys mat likho, conversational short replies."
         )
-        
         advice_success = False
         for _ in range(len(api_keys)):
             try:
                 client = genai.Client(api_key=api_keys[st.session_state.current_key_index])
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash', 
-                    contents=advice_input, 
-                    config=types.GenerateContentConfig(system_instruction=advice_system, temperature=0.6)
-                )
+                response = client.models.generate_content(model='gemini-2.5-flash', contents=advice_input, config=types.GenerateContentConfig(system_instruction=advice_system, temperature=0.6))
                 with st.chat_message("assistant", avatar="🧠"): st.markdown(response.text)
                 st.session_state.advice_history.append({"role": "assistant", "content": response.text})
                 advice_success = True
                 break
             except Exception:
                 st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
-        if not advice_success: st.error("System overloaded. Pls try again.")
+        if not advice_success: st.error("Quota Over.")
