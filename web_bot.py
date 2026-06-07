@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from google import genai
 from google.genai import types
 
@@ -58,24 +59,18 @@ div[data-testid="stAlert"] {
 
 /* 5. Chat Input Box (Fixed for White Bottom) */
 .stChatInputContainer {
-    border: 2px solid #000000 !important; /* Dark Black Border */
+    border: 2px solid #000000 !important; 
     border-radius: 15px !important;
-    background-color: #ffffff !important; /* Solid white background for contrast */
+    background-color: #ffffff !important; 
 }
-
-/* Jo text tum type karoge uska color */
 textarea {
     color: #000000 !important; 
     -webkit-text-fill-color: #000000 !important;
 }
-
-/* 'yaha type kr bhai...' wala text */
 textarea::placeholder {
     color: #000000 !important; 
     opacity: 0.9 !important;
 }
-
-/* Send button (Teer ka nishan) ko black karna */
 [data-testid="stChatInputSubmitButton"] {
     color: #000000 !important;
 }
@@ -97,16 +92,136 @@ with st.sidebar:
     st.markdown("**Connect with me:**")
     st.caption("💻 GitHub | 🌐 Instagram | 🚀 LinkedIn")
 
-st.title("Adarsh Maurya AI 🤖")
 
-# 4. मल्टीपल API Keys को लोड करना (API Rotation Logic)
+# 4. टाइटल और मिनी गेम को अगल-बगल (Columns) में सेट करना
+col1, col2 = st.columns([0.6, 0.4])
+
+with col1:
+    st.title("Adarsh Maurya AI 🤖")
+
+with col2:
+    # JavaScript + HTML Mini Game (Jumping Box)
+    game_html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <style>
+      canvas {
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background-color: rgba(10, 10, 10, 0.6);
+        border-radius: 10px;
+        cursor: pointer;
+        display: block;
+        margin-top: 15px;
+      }
+      body { margin: 0; overflow: hidden; display: flex; justify-content: right;}
+    </style>
+    </head>
+    <body>
+    <canvas id="gameCanvas" width="280" height="80"></canvas>
+    <script>
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+
+      let player = { x: 30, y: 50, width: 15, height: 15, dy: 0, gravity: 0.6, jumpPower: -8, isJumping: false };
+      let obstacle = { x: 280, y: 50, width: 15, height: 15, dx: -4 };
+      let score = 0;
+      let isGameOver = false;
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Score Text
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.font = "12px Arial";
+        ctx.fillText("Score: " + Math.floor(score), 10, 20);
+
+        if (isGameOver) {
+          ctx.fillStyle = "white";
+          ctx.fillText("Game Over! Tap to Restart", 65, 45);
+          return;
+        }
+
+        // Tap to jump helper text
+        if (score < 10) {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+            ctx.fillText("Space / Tap to Jump", 150, 20);
+        }
+
+        // Draw Player (Neon Blue)
+        ctx.fillStyle = "#00e5ff"; 
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+
+        // Draw Obstacle (Neon Red)
+        ctx.fillStyle = "#ff003c"; 
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+
+        // Physics
+        player.y += player.dy;
+        if (player.y < 50) { 
+          player.dy += player.gravity;
+        } else {
+          player.y = 50;
+          player.dy = 0;
+          player.isJumping = false;
+        }
+
+        // Move obstacle
+        obstacle.x += obstacle.dx;
+        if (obstacle.x < -20) {
+          obstacle.x = canvas.width;
+          obstacle.dx -= 0.1; // Speed increases gradually
+        }
+
+        score += 0.1;
+
+        // Collision detection
+        if (player.x < obstacle.x + obstacle.width &&
+            player.x + player.width > obstacle.x &&
+            player.y < obstacle.y + obstacle.height &&
+            player.y + player.height > obstacle.y) {
+          isGameOver = true;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      function jump(e) {
+        if(e && e.type === "keydown" && e.code !== "Space") return; // Only spacebar
+        if (e && e.type === "keydown") e.preventDefault(); // Stop page scroll
+        
+        if (!player.isJumping && !isGameOver) {
+          player.dy = player.jumpPower;
+          player.isJumping = true;
+        } else if (isGameOver) {
+          obstacle.x = canvas.width;
+          obstacle.dx = -4;
+          score = 0;
+          isGameOver = false;
+          draw();
+        }
+      }
+
+      window.addEventListener("keydown", jump);
+      canvas.addEventListener("mousedown", jump);
+      canvas.addEventListener("touchstart", jump);
+
+      draw();
+    </script>
+    </body>
+    </html>
+    """
+    components.html(game_html, height=100)
+
+
+# 5. मल्टीपल API Keys को लोड करना (API Rotation Logic)
 try:
     api_keys = st.secrets["GEMINI_API_KEYS"].split(",")
 except Exception as e:
     st.error("Secrets missing! Streamlit me Manage App -> Settings -> Secrets me jakar GEMINI_API_KEYS dalo.")
     st.stop()
 
-# 5. बॉट का दिमाग (अपग्रेडेड प्रॉम्प्ट)
+# 6. बॉट का दिमाग (अपग्रेडेड प्रॉम्प्ट)
 system_instruction = (
     "तुम्हारा नाम 'Adarsh Maurya AI' है। तुम एक AI नहीं, बल्कि यूजर के सबसे करीबी, कूल और स्मार्ट बेस्ट फ्रेंड हो। "
     "STRICT RULE 1: Emoji ka use bilkul bhi nahi karna hai. Ekdam raw aur real text lagna chahiye. "
@@ -118,7 +233,7 @@ system_instruction = (
     "यूजर परेशान हो तो एकदम अच्छे दोस्त की तरह बात सुनो और सॉलिड एडवाइस DO। एटीट्यूड रखो, पर केयरिंग भी बनो।"
 )
 
-# 6. चैट हिस्ट्री और करेंट Key इंडेक्स को याद रखना
+# 7. चैट हिस्ट्री
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
@@ -130,7 +245,7 @@ for message in st.session_state.chat_history:
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-# 7. यूज़र इनपुट और API शिफ्टिंग का असली मैजिक
+# 8. यूज़र इनपुट
 user_input = st.chat_input("yaha type kr bhai...")
 
 if user_input:
