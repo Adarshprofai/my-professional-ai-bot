@@ -70,23 +70,18 @@ textarea::placeholder {
     fill: #000000 !important;
 }
 
-/* 🟢 NEW: File Uploader Styling (Purple Theme & Black Text) */
-/* 1. Uploader ka main background (Deep Purple) */
+/* File Uploader Styling (Purple Theme & Black Text) */
 [data-testid="stFileUploader"] {
-    background-color: rgba(107, 33, 168, 0.85) !important; /* Deep Aesthetic Purple */
+    background-color: rgba(107, 33, 168, 0.85) !important; 
     border-radius: 12px;
     padding: 12px !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
-
-/* 2. Drag & Drop area (+ icon wala box) - Light color for visibility */
 [data-testid="stFileUploadDropzone"] {
-    background-color: #f3e8ff !important; /* Light Lavender jisse box alag se dikhe */
-    border: 2px dashed #4c1d95 !important; /* Dark purple dashed border */
+    background-color: #f3e8ff !important; 
+    border: 2px dashed #4c1d95 !important; 
     border-radius: 8px !important;
 }
-
-/* 3. Dropzone ke andar ka text (200MB limit) aur SVG icon (Solid Black) */
 [data-testid="stFileUploadDropzone"] * {
     color: #000000 !important;
     fill: #000000 !important;
@@ -124,12 +119,11 @@ with col1:
     st.title("Adarsh Maurya AI 🤖")
 
 with col2:
-    # Game ke theek left me plus icon wala uploader
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     uploaded_photo = st.file_uploader("➕ Shayari ke liye Photo dalein", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
 
 with col3:
-    # JavaScript + HTML Mini Game (Jumping Box)
+    # JavaScript + HTML Mini Game (Start Button & High Score Update)
     game_html = """
     <!DOCTYPE html>
     <html><head><style>
@@ -141,13 +135,36 @@ with col3:
       const canvas = document.getElementById("gameCanvas"); const ctx = canvas.getContext("2d");
       let player = { x: 30, y: 50, width: 15, height: 15, dy: 0, gravity: 0.6, jumpPower: -8, isJumping: false };
       let obstacle = { x: 280, y: 50, width: 15, height: 15, dx: -4 };
-      let score = 0; let isGameOver = false;
+      let score = 0; 
+      let isGameOver = false;
+      let gameStarted = false; // Naya logic: Start se pehle game ruka rahega
+      
+      // High score ko browser (localStorage) se uthana
+      let highScore = localStorage.getItem('adarshHighScore') || 0;
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; ctx.font = "12px Arial"; ctx.fillText("Score: " + Math.floor(score), 10, 20);
-        if (isGameOver) { ctx.fillStyle = "white"; ctx.fillText("Game Over! Tap to Restart", 65, 45); return; }
-        if (score < 10) { ctx.fillStyle = "rgba(255, 255, 255, 0.3)"; ctx.fillText("Space / Tap to Jump", 150, 20); }
+        
+        // Dono Score dikhana
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; ctx.font = "12px Arial"; 
+        ctx.fillText("Score: " + Math.floor(score), 10, 20);
+        ctx.fillStyle = "rgba(255, 215, 0, 0.9)"; // High score ke liye golden color
+        ctx.fillText("HI: " + Math.floor(highScore), 210, 20);
+
+        // Agar game start nahi hua hai, to START button dikhao
+        if (!gameStarted) {
+            ctx.fillStyle = "#00e5ff"; ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.fillStyle = "#ff003c"; ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            
+            ctx.fillStyle = "white"; ctx.font = "bold 16px Arial"; 
+            ctx.fillText("▶ START", 105, 45);
+            return; // Yaha se loop rok do
+        }
+
+        if (isGameOver) { 
+            ctx.fillStyle = "white"; ctx.font = "12px Arial"; ctx.fillText("Game Over! Tap to Restart", 65, 45); 
+            return; 
+        }
         
         ctx.fillStyle = "#00e5ff"; ctx.fillRect(player.x, player.y, player.width, player.height);
         ctx.fillStyle = "#ff003c"; ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
@@ -159,24 +176,42 @@ with col3:
         if (obstacle.x < -20) { obstacle.x = canvas.width; obstacle.dx -= 0.1; }
         score += 0.1;
         
+        // Collision lagne par
         if (player.x < obstacle.x + obstacle.width && player.x + player.width > obstacle.x &&
-            player.y < obstacle.y + obstacle.height && player.y + player.height > obstacle.y) { isGameOver = true; }
+            player.y < obstacle.y + obstacle.height && player.y + player.height > obstacle.y) { 
+            isGameOver = true; 
+            // Agar naya score high score se jyada hai, to save kar do
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('adarshHighScore', highScore);
+            }
+        }
         requestAnimationFrame(draw);
       }
+      
       function jump(e) {
         if(e && e.type === "keydown" && e.code !== "Space") return;
         if (e && e.type === "keydown") e.preventDefault();
+        
+        // Pehli baar click/space dabane par game chalu hoga
+        if (!gameStarted) {
+            gameStarted = true;
+            draw();
+            return;
+        }
+        
         if (!player.isJumping && !isGameOver) { player.dy = player.jumpPower; player.isJumping = true; } 
         else if (isGameOver) { obstacle.x = canvas.width; obstacle.dx = -4; score = 0; isGameOver = false; draw(); }
       }
+      
       window.addEventListener("keydown", jump); canvas.addEventListener("mousedown", jump); canvas.addEventListener("touchstart", jump);
-      draw();
+      draw(); // Pehli baar sirf screen draw karne ke liye
     </script>
     </body></html>
     """
     components.html(game_html, height=100)
 
-# 6. ✨ द शायरी इंजन (Vision AI with Compliment & Vibe Check) ✨
+# 6. ✨ द शायरी इंजन ✨
 if uploaded_photo is not None:
     img = Image.open(uploaded_photo)
     st.markdown("---")
@@ -236,7 +271,6 @@ if uploaded_photo is not None:
                 st.error("Bhai API limit khatam ho gayi hai photo padhne ki.")
     st.markdown("---")
 
-
 # 7. बॉट का दिमाग (चैट प्रॉम्प्ट)
 system_instruction = (
     "तुम्हारा नाम 'Adarsh Maurya AI' है। तुम एक AI नहीं, बल्कि यूजर के सबसे करीबी, कूल और स्मार्ट बेस्ट फ्रेंड हो। "
@@ -246,7 +280,7 @@ system_instruction = (
     "STRICT RULE 4: Lambe paragraph mat likhna. Maximum 1 se 3 line me apna mast reply dena. "
 )
 
-# 8. चैट हिस्ट्री और यूज़र इनपुट (API Rotation Logic ke sath)
+# 8. चैट हिस्ट्री और यूज़र इनपुट
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
