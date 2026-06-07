@@ -219,4 +219,197 @@ elif app_mode == "🗑️ The Mental Flush":
         /* Button */
         #flushBtn { display: none; margin: 20px auto; padding: 15px 40px; background: #aa0000; color: white; border: 2px solid #ff0000; border-radius: 8px; font-size: 24px; cursor: pointer; font-family: 'Courier New', monospace; font-weight: bold; box-shadow: 0 0 15px rgba(255,0,0,0.5); transition: 0.3s;}
         #flushBtn:hover { background: #ff0000; transform: scale(1.05); box-shadow: 0 0 30px rgba(255,0,0,0.8); }
-        #statusText
+        #statusText { font-size: 16px; color: #888; margin-top: 10px; transition: 0.5s;}
+    </style>
+    </head>
+    <body>
+
+    <p id="statusText">Tap the dustbin to open the lid and activate the mic.</p>
+    
+    <div class="bin-container" id="container">
+        <div class="dustbin" id="bin" onclick="toggleBin()">
+            <div class="lid"></div>
+            <div class="mic">🎙️</div>
+        </div>
+    </div>
+    
+    <button id="flushBtn" onclick="flushIt()">⚠️ DESTROY & FLUSH</button>
+
+    <!-- Hidden Sound Effects -->
+    <audio id="boomSound" src="https://assets.mixkit.co/active_storage/sfx/119/119-preview.mp3"></audio>
+    <audio id="flushSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+
+    <script>
+        let bin = document.getElementById('bin');
+        let statusText = document.getElementById('statusText');
+        let flushBtn = document.getElementById('flushBtn');
+        let boom = document.getElementById('boomSound');
+        let flush = document.getElementById('flushSound');
+        let isOpen = false;
+        let recognition;
+        let wordsDropped = 0;
+
+        // Speech API Setup
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.lang = 'hi-IN'; // Understands Hindi & English
+            
+            recognition.onresult = function(event) {
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        let text = event.results[i][0].transcript.trim();
+                        let words = text.split(' ');
+                        words.forEach((w, index) => {
+                            setTimeout(() => dropWord(w), index * 400); // Ek ek karke word girenge
+                        });
+                        wordsDropped += words.length;
+                        
+                        // Jaise hi kuch bola, thodi der baad Flush button dikha do
+                        if(wordsDropped > 0 && isOpen) {
+                            setTimeout(() => {
+                                flushBtn.style.display = "block";
+                            }, 1500);
+                        }
+                    }
+                }
+            };
+            recognition.onerror = function(e) { console.log("Mic error:", e.error); }
+        } else {
+            statusText.innerText = "Bhai tera browser Speech API support nahi karta. Chrome use kar.";
+        }
+
+        function toggleBin() {
+            if(!isOpen) {
+                bin.classList.add('open');
+                statusText.innerText = "Speak your heart out. Your words are flowing into the trash...";
+                statusText.style.color = "#ff6666";
+                isOpen = true;
+                if(recognition) recognition.start();
+            } else {
+                bin.classList.remove('open');
+                statusText.innerText = "Bin Locked. Ready to Destroy?";
+                statusText.style.color = "#888";
+                isOpen = false;
+                if(recognition) recognition.stop();
+            }
+        }
+
+        function dropWord(text) {
+            let w = document.createElement('div');
+            w.className = 'word';
+            w.innerText = text;
+            
+            // Start position: randomly at the top of the container
+            let startX = 50 + Math.random() * 200; 
+            w.style.left = startX + 'px';
+            w.style.top = '0px';
+            document.getElementById('container').appendChild(w);
+
+            let startTime = performance.now();
+            function animate(time) {
+                let elapsed = time - startTime;
+                let progress = elapsed / 2500; // 2.5 seconds falling time
+                if (progress > 1) progress = 1;
+                
+                // Y-axis: Falls down to 300px (inside bin)
+                let y = progress * 300;
+                
+                // X-axis: Sine Wave motion (Lehrate hue)
+                let x = startX + Math.sin(progress * Math.PI * 6) * 40; 
+                
+                // Funnel effect: End me ekdam dustbin ke center (180px) me ghusna chahiye
+                if (progress > 0.7) {
+                    x = x + (180 - x) * ((progress - 0.7) * 3.33); 
+                }
+
+                w.style.transform = `translate(${x - startX}px, ${y}px)`;
+                
+                if(progress < 0.2) w.style.opacity = progress * 5;
+                else if (progress > 0.8) w.style.opacity = (1 - progress) * 5;
+                else w.style.opacity = 1;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    w.remove(); // Delete word after it falls
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function flushIt() {
+            if(recognition) recognition.stop();
+            bin.classList.remove('open');
+            isOpen = false;
+            
+            boom.play();
+            setTimeout(() => flush.play(), 600);
+            
+            document.body.animate([
+                { transform: 'translate(5px, 5px) rotate(0deg)' },
+                { transform: 'translate(-5px, -5px) rotate(-1deg)' },
+                { transform: 'translate(-5px, 5px) rotate(1deg)' },
+                { transform: 'translate(5px, -5px) rotate(0deg)' },
+                { transform: 'translate(0px, 0px) rotate(0deg)' }
+            ], { duration: 150, iterations: 6 });
+
+            document.querySelectorAll('.word').forEach(e => e.remove());
+
+            flushBtn.style.display = "none";
+            statusText.innerText = "The garbage has been cleared. Take a deep breath. You are light now. 🌊";
+            statusText.style.color = "#00e5ff";
+            
+            setTimeout(() => {
+                statusText.innerText = "Tap the dustbin to open the lid and activate the mic.";
+                statusText.style.color = "#888";
+                wordsDropped = 0;
+            }, 6000);
+        }
+    </script>
+    </body>
+    </html>
+    """
+    components.html(flush_html, height=480)
+
+    st.markdown("---")
+    
+    # 🧠 THE ADVICE ZONE (AI Friend in Flush Mode)
+    st.markdown("<h3 style='text-align: center; color: #555;'>Too heavy to flush? Let's talk it out.</h3>", unsafe_allow_html=True)
+    
+    if "advice_history" not in st.session_state:
+        st.session_state.advice_history = []
+        
+    for msg in st.session_state.advice_history:
+        avatar = "🧑‍💻" if msg["role"] == "user" else "🧠"
+        with st.chat_message(msg["role"], avatar=avatar):
+            st.markdown(msg["content"])
+
+    advice_input = st.chat_input("I need advice...")
+    if advice_input:
+        with st.chat_message("user", avatar="🧑‍💻"): st.markdown(advice_input)
+        st.session_state.advice_history.append({"role": "user", "content": advice_input})
+        
+        advice_system = (
+            "You are a highly empathetic, wise, and calm psychologist/friend. The user is using the 'Mental Flush' feature, meaning they are stressed or overthinking. "
+            "Acknowledge their pain gently. Provide practical, grounded, and realistic 'jugaad' (solutions) to help lower their anxiety. "
+            "Use a comforting, conversational Hinglish tone. Keep it short (3-4 lines max)."
+        )
+        
+        advice_success = False
+        for _ in range(len(api_keys)):
+            try:
+                client = genai.Client(api_key=api_keys[st.session_state.current_key_index])
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash', 
+                    contents=advice_input, 
+                    config=types.GenerateContentConfig(system_instruction=advice_system, temperature=0.6)
+                )
+                with st.chat_message("assistant", avatar="🧠"): st.markdown(response.text)
+                st.session_state.advice_history.append({"role": "assistant", "content": response.text})
+                advice_success = True
+                break
+            except Exception:
+                st.session_state.current_key_index = (st.session_state.current_key_index + 1) % len(api_keys)
+        if not advice_success: st.error("System overloaded. Pls try again.")
