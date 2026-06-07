@@ -5,7 +5,7 @@ from google.genai import types
 # 1. पेज का प्रीमियम डिज़ाइन
 st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="wide")
 
-# 2. PREMIUM UI (Glassmorphism, No Watermark & White Text)
+# 2. PREMIUM UI (Glassmorphism, No Watermark & Fixed Input Box)
 premium_css = """
 <style>
 /* 1. Watermark aur upar/neeche ka menu gayab karo */
@@ -56,18 +56,31 @@ div[data-testid="stAlert"] {
     color: white !important;
 }
 
-/* 5. Chat Input Box */
+/* 5. Chat Input Box (Fixed for White Bottom) */
 .stChatInputContainer {
-    background-color: rgba(0, 0, 0, 0.6) !important;
-    backdrop-filter: blur(15px) !important;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid #000000 !important; /* Dark Black Border */
+    border-radius: 15px !important;
+    background-color: #ffffff !important; /* Solid white background for contrast */
 }
+
+/* Jo text tum type karoge uska color */
 textarea {
-    color: white !important;
+    color: #000000 !important; 
+    -webkit-text-fill-color: #000000 !important;
 }
+
+/* 'yaha type kr bhai...' wala text */
 textarea::placeholder {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: #000000 !important; 
+    opacity: 0.9 !important;
+}
+
+/* Send button (Teer ka nishan) ko black karna */
+[data-testid="stChatInputSubmitButton"] {
+    color: #000000 !important;
+}
+[data-testid="stChatInputSubmitButton"] svg {
+    fill: #000000 !important;
 }
 </style>
 """
@@ -102,7 +115,7 @@ system_instruction = (
     "STRICT RULE 4: Lambe lambe paragraph (essays) mat likhna. Maximum 1 se 3 line me apna mast reply dena. "
     "अगर यूजर रूखा या छोटा जवाब दे (जैसे 'hmm'), तो तुम मज़े लो (जैसे: 'ye hmm kya hota h bhi, theek se bata ky chal rha h dimag me'). "
     "अगर यूजर बोले 'rude q h', तो एटीट्यूड में बोलो (जैसे: 'bhi paida hi rude hua tha mai, tu bata tujhe kya chull machi h?'). "
-    "यूजर परेशान हो तो एकदम अच्छे दोस्त की तरह बात सुनो और सॉलिड एडवाइस दो। एटीट्यूड रखो, पर केयरिंग भी बनो।"
+    "यूजर परेशान हो तो एकदम अच्छे दोस्त की तरह बात सुनो और सॉलिड एडवाइस DO। एटीट्यूड रखो, पर केयरिंग भी बनो।"
 )
 
 # 6. चैट हिस्ट्री और करेंट Key इंडेक्स को याद रखना
