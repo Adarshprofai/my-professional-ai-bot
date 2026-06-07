@@ -6,8 +6,75 @@ from google.genai import types
 st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="wide")
 
 # 2. PREMIUM UI (Glassmorphism & No Watermark)
+# 2. PREMIUM UI (Glassmorphism, No Watermark & White Text)
 premium_css = """
 <style>
+/* 1. Watermark aur upar/neeche ka menu gayab karo */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* 2. Dark Cinematic Background Image */
+[data-testid="stAppViewContainer"] {
+    background-image: url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* 3. Transparent Sidebar (Glass Effect) */
+[data-testid="stSidebar"] {
+    background-color: rgba(10, 10, 10, 0.4) !important;
+    backdrop-filter: blur(15px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 🟢 NEW: Sidebar aur sabhi text ko safed (White) karna */
+[data-testid="stSidebar"] * {
+    color: #ffffff !important;
+}
+h1, h2, h3, p, span, div {
+    color: #ffffff !important;
+}
+
+/* 🟢 NEW: Info Box (Neela dabba) ko bhi glass jaisa dark banana */
+div[data-testid="stAlert"] {
+    background-color: rgba(20, 20, 20, 0.5) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+}
+
+/* 4. Chat Messages me Glassmorphism */
+.stChatMessage {
+    background-color: rgba(20, 20, 20, 0.5) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    color: white !important;
+}
+
+/* 5. Chat Input Box (Neeche type karne wali jagah) */
+.stChatInputContainer {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(15px) !important;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Input text aur placeholder ka color white karna */
+textarea {
+    color: white !important;
+}
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+</style>
+"""
+st.markdown(premium_css, unsafe_allow_html=True)
 /* 1. Watermark aur upar/neeche ka menu gayab karo */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
