@@ -75,16 +75,6 @@ textarea::placeholder {
 </style>
 """
 st.markdown(premium_css, unsafe_allow_html=True)
-# 2. साइडबार
-with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=120)
-    st.title("Adarsh Maurya")
-    st.write("🤖 Artificial Intelligence & CS Enthusiast")
-    st.markdown("---")
-    st.info("Bhai ka apna personal AI bot h ye. Ekdam raw aur real chatting krta h binna faltu k emojis k. Khud test kr k dekh lo!")
-    st.markdown("---")
-    st.markdown("**Connect with me:**")
-    st.caption("💻 GitHub | 🌐 Instagram | 🚀 LinkedIn")
 /* 1. Watermark aur upar/neeche ka menu gayab karo */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
