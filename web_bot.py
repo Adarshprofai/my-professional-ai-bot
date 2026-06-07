@@ -7,7 +7,7 @@ from PIL import Image
 # 1. पेज का प्रीमियम डिज़ाइन
 st.set_page_config(page_title="Adarsh AI Pro", page_icon="🧑‍💻", layout="wide")
 
-# 2. PREMIUM UI (Aesthetic Calming Background & Glassmorphism)
+# 2. PREMIUM UI (Aesthetic Calming Background, Glassmorphism & Custom Uploader)
 premium_css = """
 <style>
 /* Watermark aur upar/neeche ka menu gayab karo */
@@ -70,22 +70,32 @@ textarea::placeholder {
     fill: #000000 !important;
 }
 
-/* File Uploader Styling (Purple Theme & Black Text) */
+/* 🟢 UPGRADED: File Uploader Styling (Purple Outer, Light Pink Inner, Dark Black Text) */
+/* 1. Uploader ka main background (Deep Purple) */
 [data-testid="stFileUploader"] {
-    background-color: rgba(107, 33, 168, 0.85) !important; 
+    background-color: rgba(107, 33, 168, 0.9) !important; 
     border-radius: 12px;
-    padding: 12px !important;
+    padding: 10px !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
+
+/* 2. Drag & Drop area (Light Pink Background) */
 [data-testid="stFileUploadDropzone"] {
-    background-color: #f3e8ff !important; 
-    border: 2px dashed #4c1d95 !important; 
+    background-color: #ffd1dc !important; /* Aesthetic Light Pink */
+    border: 2px dashed #4c1d95 !important; /* Dark purple border */
     border-radius: 8px !important;
 }
+
+/* 3. Dropzone ke andar ka sara Text, Button aur SVG icon (Solid Dark Black) */
 [data-testid="stFileUploadDropzone"] * {
     color: #000000 !important;
-    fill: #000000 !important;
-    font-weight: 600 !important;
+    fill: #000000 !important; /* Icon ke liye */
+    font-weight: 700 !important; /* Bold text taaki clearly dikhe */
+}
+
+/* Specific target for the upload button text inside dropzone */
+[data-testid="stFileUploadDropzone"] button * {
+    color: #000000 !important; 
 }
 </style>
 """
@@ -137,28 +147,25 @@ with col3:
       let obstacle = { x: 280, y: 50, width: 15, height: 15, dx: -4 };
       let score = 0; 
       let isGameOver = false;
-      let gameStarted = false; // Naya logic: Start se pehle game ruka rahega
+      let gameStarted = false; 
       
-      // High score ko browser (localStorage) se uthana
       let highScore = localStorage.getItem('adarshHighScore') || 0;
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Dono Score dikhana
         ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; ctx.font = "12px Arial"; 
         ctx.fillText("Score: " + Math.floor(score), 10, 20);
-        ctx.fillStyle = "rgba(255, 215, 0, 0.9)"; // High score ke liye golden color
+        ctx.fillStyle = "rgba(255, 215, 0, 0.9)"; 
         ctx.fillText("HI: " + Math.floor(highScore), 210, 20);
 
-        // Agar game start nahi hua hai, to START button dikhao
         if (!gameStarted) {
             ctx.fillStyle = "#00e5ff"; ctx.fillRect(player.x, player.y, player.width, player.height);
             ctx.fillStyle = "#ff003c"; ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
             
             ctx.fillStyle = "white"; ctx.font = "bold 16px Arial"; 
             ctx.fillText("▶ START", 105, 45);
-            return; // Yaha se loop rok do
+            return; 
         }
 
         if (isGameOver) { 
@@ -176,11 +183,9 @@ with col3:
         if (obstacle.x < -20) { obstacle.x = canvas.width; obstacle.dx -= 0.1; }
         score += 0.1;
         
-        // Collision lagne par
         if (player.x < obstacle.x + obstacle.width && player.x + player.width > obstacle.x &&
             player.y < obstacle.y + obstacle.height && player.y + player.height > obstacle.y) { 
             isGameOver = true; 
-            // Agar naya score high score se jyada hai, to save kar do
             if (score > highScore) {
                 highScore = score;
                 localStorage.setItem('adarshHighScore', highScore);
@@ -193,7 +198,6 @@ with col3:
         if(e && e.type === "keydown" && e.code !== "Space") return;
         if (e && e.type === "keydown") e.preventDefault();
         
-        // Pehli baar click/space dabane par game chalu hoga
         if (!gameStarted) {
             gameStarted = true;
             draw();
@@ -205,7 +209,7 @@ with col3:
       }
       
       window.addEventListener("keydown", jump); canvas.addEventListener("mousedown", jump); canvas.addEventListener("touchstart", jump);
-      draw(); // Pehli baar sirf screen draw karne ke liye
+      draw(); 
     </script>
     </body></html>
     """
